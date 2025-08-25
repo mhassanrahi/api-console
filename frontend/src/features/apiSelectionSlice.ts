@@ -7,7 +7,8 @@ export type ApiName =
   | 'Bored API'
   | 'GitHub Users'
   | 'Weather'
-  | 'Custom Backend';
+  | 'Custom Backend'
+  | 'Dictionary';
 
 export interface ApiSelectionState {
   activeApis: ApiName[];
@@ -21,6 +22,7 @@ const initialState: ApiSelectionState = {
     'GitHub Users',
     'Weather',
     'Custom Backend',
+    'Dictionary',
   ],
 };
 

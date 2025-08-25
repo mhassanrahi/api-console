@@ -46,16 +46,74 @@ io.on('connection', (socket) => {
   socket.on('chat_command', async (data) => {
     console.log('Received command:', data);
     socket.emit('command_status', { status: 'processing' });
-    // Simulate command processing
-    setTimeout(() => {
+    const cmd = data.command.trim().toLowerCase();
+    try {
+      let api = '';
+      let result = '';
+      if (cmd === 'get cat fact') {
+        api = 'Cat Facts';
+        const resp = await fetch('https://catfact.ninja/fact');
+        const json = await resp.json();
+        result = json.fact || 'No fact found.';
+      } else if (cmd === 'get joke') {
+        api = 'Chuck Norris Jokes';
+        const resp = await fetch('https://official-joke-api.appspot.com/random_joke');
+        const json = await resp.json();
+        result = json.setup && json.punchline ? `${json.setup} — ${json.punchline}` : 'No joke found.';
+      } else if (cmd.startsWith('define ')) {
+        api = 'Dictionary';
+        const word = cmd.replace('define ', '').trim();
+        if (!word) {
+          result = 'Please provide a word to define.';
+        } else {
+          const resp = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+          if (resp.ok) {
+            const json = await resp.json();
+            if (Array.isArray(json) && json[0]?.meanings?.[0]?.definitions?.[0]?.definition) {
+              result = `${word}: ${json[0].meanings[0].definitions[0].definition}`;
+            } else {
+              result = `No definition found for "${word}".`;
+            }
+          } else {
+            result = `No definition found for "${word}".`;
+          }
+        }
+      } else if (cmd.startsWith('get weather')) {
+        api = 'Weather';
+        // Example: get weather Berlin
+        const city = cmd.replace('get weather', '').trim() || 'Berlin';
+        // Hardcoded city-to-coords for demo
+        const cityCoords = {
+          berlin: { lat: 52.52, lon: 13.41 },
+          london: { lat: 51.51, lon: -0.13 },
+          paris: { lat: 48.85, lon: 2.35 },
+          tokyo: { lat: 35.68, lon: 139.76 },
+        };
+        const coords = cityCoords[city.toLowerCase()] || cityCoords['berlin'];
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true`;
+        const resp = await fetch(url);
+        const json = await resp.json();
+        if (json.current_weather) {
+          result = `Weather in ${city}: ${json.current_weather.temperature}°C, wind ${json.current_weather.windspeed} km/h`;
+        } else {
+          result = 'Weather data not found.';
+        }
+      } else {
+        api = 'General';
+        result = `Unknown command: ${data.command}`;
+      }
+
+      console.log("result", result);
       socket.emit('api_response', {
         command: data.command,
-        result: `Echo: ${data.command}`,
-        api: 'Cat Facts',
+        result,
+        api,
         timestamp: Date.now(),
       });
       socket.emit('command_status', { status: 'success' });
-    }, 1000);
+    } catch (err: any) {
+      socket.emit('command_status', { status: 'error', error: err.message });
+    }
   });
 });
 

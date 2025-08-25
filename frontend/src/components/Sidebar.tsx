@@ -11,6 +11,7 @@ const apiList = [
   'GitHub Users',
   'Weather',
   'Custom Backend',
+  'Dictionary',
 ] as const;
 
 const Sidebar: React.FC = () => {
