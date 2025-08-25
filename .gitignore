@@ -1,0 +1,16 @@
+# frontend
+/frontend/node_modules
+/frontend/dist
+/frontend/.env
+/frontend/.env.local
+
+# backend
+/backend/node_modules
+/backend/dist
+/backend/.env
+/backend/.env.local
+
+# common
+.env
+.env.local
+prd.md
