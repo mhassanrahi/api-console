@@ -4,7 +4,6 @@ import SignUp from './SignUp';
 import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
 import VerifyEmail from './VerifyEmail';
-import { UI_TEXT } from '../../constants';
 
 export type AuthScreen = 'login' | 'signup' | 'forgot' | 'reset' | 'verify';
 
