@@ -1,6 +1,6 @@
-import { AuthenticatedSocket } from '../middleware/auth';
-import { ApiService } from '../services/apiService';
-import { UserService } from '../services/userService';
+import { AuthenticatedSocket } from "../middleware/auth";
+import { ApiService } from "../services/apiService";
+import { UserService } from "../services/userService";
 
 export interface CommandResult {
   api: string;
@@ -8,169 +8,193 @@ export interface CommandResult {
 }
 
 export class CommandController {
-  static async processCommand(command: string, socket: AuthenticatedSocket): Promise<CommandResult> {
+  static async processCommand(
+    command: string,
+    socket: AuthenticatedSocket
+  ): Promise<CommandResult> {
     const cmd = command.trim().toLowerCase();
-    
+
     // Cat Facts
-    if (cmd === 'get cat fact') {
+    if (cmd === "get cat fact") {
       const response = await ApiService.getCatFact();
       return {
-        api: 'Cat Facts',
-        result: response.success ? response.data : response.error || 'Failed to fetch cat fact'
+        api: "Cat Facts",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to fetch cat fact",
       };
     }
-    
+
     // Chuck Norris Jokes
-    if (cmd === 'get chuck joke' || cmd === 'get joke') {
+    if (cmd === "get chuck joke" || cmd === "get joke") {
       const response = await ApiService.getChuckJoke();
       return {
-        api: 'Chuck Norris Jokes',
-        result: response.success ? response.data : response.error || 'Failed to fetch joke'
+        api: "Chuck Norris Jokes",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to fetch joke",
       };
     }
-    
-    if (cmd.startsWith('search chuck ')) {
-      const query = cmd.replace('search chuck ', '').trim();
+
+    if (cmd.startsWith("search chuck ")) {
+      const query = cmd.replace("search chuck ", "").trim();
       if (!query) {
         return {
-          api: 'Chuck Norris Jokes',
-          result: 'Please provide a search term for Chuck Norris jokes.'
+          api: "Chuck Norris Jokes",
+          result: "Please provide a search term for Chuck Norris jokes.",
         };
       }
       const response = await ApiService.searchChuckJokes(query);
       return {
-        api: 'Chuck Norris Jokes',
-        result: response.success ? response.data : response.error || 'Failed to search jokes'
+        api: "Chuck Norris Jokes",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to search jokes",
       };
     }
-    
+
     // Bored API
-    if (cmd === 'get activity') {
+    if (cmd === "get activity") {
       const response = await ApiService.getActivity();
       return {
-        api: 'Bored API',
-        result: response.success ? response.data : response.error || 'Failed to fetch activity'
+        api: "Bored API",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to fetch activity",
       };
     }
-    
+
     // GitHub Users
-    if (cmd.startsWith('search github ')) {
-      const query = cmd.replace('search github ', '').trim();
+    if (cmd.startsWith("search github ")) {
+      const query = cmd.replace("search github ", "").trim();
       if (!query) {
         return {
-          api: 'GitHub Users',
-          result: 'Please provide a username to search.'
+          api: "GitHub Users",
+          result: "Please provide a username to search.",
         };
       }
       const response = await ApiService.searchGitHubUsers(query);
       return {
-        api: 'GitHub Users',
-        result: response.success ? response.data : response.error || 'Failed to search users'
+        api: "GitHub Users",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to search users",
       };
     }
-    
+
     // Dictionary
-    if (cmd.startsWith('define ')) {
-      const word = cmd.replace('define ', '').trim();
+    if (cmd.startsWith("define ")) {
+      const word = cmd.replace("define ", "").trim();
       if (!word) {
         return {
-          api: 'Dictionary',
-          result: 'Please provide a word to define.'
+          api: "Dictionary",
+          result: "Please provide a word to define.",
         };
       }
       const response = await ApiService.defineWord(word);
       return {
-        api: 'Dictionary',
-        result: response.success ? response.data : response.error || 'Failed to fetch definition'
+        api: "Dictionary",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to fetch definition",
       };
     }
-    
+
     // Weather
-    if (cmd.startsWith('get weather')) {
-      const city = cmd.replace('get weather', '').trim() || 'Berlin';
+    if (cmd.startsWith("get weather")) {
+      const city = cmd.replace("get weather", "").trim() || "Berlin";
       const response = await ApiService.getWeather(city);
       return {
-        api: 'Weather',
-        result: response.success ? response.data : response.error || 'Failed to fetch weather'
+        api: "Weather",
+        result: response.success
+          ? response.data
+          : response.error || "Failed to fetch weather",
       };
     }
-    
+
     // Custom Backend - User Preferences
-    if (cmd === 'get my preferences') {
+    if (cmd === "get my preferences") {
       try {
-        const userId = socket.data.user?.sub || 'default';
+        const userId = socket.data.user?.sub || "default";
         const preferences = await UserService.getUserPreferences(userId);
         return {
-          api: 'Custom Backend',
-          result: `Your preferences: Theme: ${preferences.theme}, Default APIs: ${preferences.defaultApis.join(', ')}, Notifications: ${preferences.notifications}`
+          api: "Custom Backend",
+          result: `Your preferences: Theme: ${
+            preferences.theme
+          }, Default APIs: ${preferences.defaultApis.join(
+            ", "
+          )}, Notifications: ${preferences.notifications}`,
         };
       } catch (error) {
         return {
-          api: 'Custom Backend',
-          result: 'Failed to fetch preferences.'
+          api: "Custom Backend",
+          result: "Failed to fetch preferences.",
         };
       }
     }
-    
+
     // Custom Backend - Save Search
-    if (cmd.startsWith('save search ')) {
-      const query = cmd.replace('save search ', '').trim();
+    if (cmd.startsWith("save search ")) {
+      const query = cmd.replace("save search ", "").trim();
       if (!query) {
         return {
-          api: 'Custom Backend',
-          result: 'Please provide a search query to save.'
+          api: "Custom Backend",
+          result: "Please provide a search query to save.",
         };
       }
       try {
-        const userId = socket.data.user?.sub || 'default';
+        const userId = socket.data.user?.sub || "default";
         await UserService.saveSearchQuery(userId, query);
         return {
-          api: 'Custom Backend',
-          result: `Search "${query}" saved successfully.`
+          api: "Custom Backend",
+          result: `Search "${query}" saved successfully.`,
         };
       } catch (error) {
         return {
-          api: 'Custom Backend',
-          result: 'Failed to save search.'
+          api: "Custom Backend",
+          result: "Failed to save search.",
         };
       }
     }
-    
+
     // Custom Backend - Get Search History
-    if (cmd === 'get search history') {
+    if (cmd === "get search history") {
       try {
-        const userId = socket.data.user?.sub || 'default';
+        const userId = socket.data.user?.sub || "default";
         const history = await UserService.getSearchHistory(userId);
         if (history.length > 0) {
           return {
-            api: 'Custom Backend',
-            result: `Recent searches: ${history.slice(0, 3).map(s => s.query).join(', ')}`
+            api: "Custom Backend",
+            result: `Recent searches: ${history
+              .slice(0, 3)
+              .map((s) => s.query)
+              .join(", ")}`,
           };
         } else {
           return {
-            api: 'Custom Backend',
-            result: 'No search history found.'
+            api: "Custom Backend",
+            result: "No search history found.",
           };
         }
       } catch (error) {
         return {
-          api: 'Custom Backend',
-          result: 'Failed to fetch search history.'
+          api: "Custom Backend",
+          result: "Failed to fetch search history.",
         };
       }
     }
-    
+
     // System Commands
-    if (cmd === 'clear') {
+    if (cmd === "clear") {
       return {
-        api: 'System',
-        result: 'Chat history cleared.'
+        api: "System",
+        result: "Chat history cleared.",
       };
     }
-    
-    if (cmd === 'help') {
+
+    if (cmd === "help") {
       return {
-        api: 'System',
+        api: "System",
         result: `Available commands:
 • get cat fact - Get a random cat fact
 • get chuck joke - Get a Chuck Norris joke
@@ -183,14 +207,14 @@ export class CommandController {
 • save search [query] - Save a search query
 • get search history - Get search history
 • clear - Clear chat history
-• help - Show this help message`
+• help - Show this help message`,
       };
     }
-    
+
     // Unknown command
     return {
-      api: 'General',
-      result: `Unknown command: ${command}. Type 'help' for available commands.`
+      api: "General",
+      result: `Unknown command: ${command}. Type 'help' for available commands.`,
     };
   }
 }

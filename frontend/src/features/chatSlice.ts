@@ -6,6 +6,8 @@ export interface ChatMessage {
   result: string;
   api: string;
   timestamp: number;
+  pinned?: boolean;
+  id?: string;
 }
 
 export interface ChatState {
@@ -30,7 +32,18 @@ const chatSlice = createSlice({
       );
       
       if (!isDuplicate) {
-        state.messages.push(action.payload);
+        const messageWithId = {
+          ...action.payload,
+          id: `${action.payload.api}-${action.payload.timestamp}-${Date.now()}`,
+          pinned: false
+        };
+        state.messages.push(messageWithId);
+      }
+    },
+    togglePinnedMessage(state, action: PayloadAction<string>) {
+      const message = state.messages.find(msg => msg.id === action.payload);
+      if (message) {
+        message.pinned = !message.pinned;
       }
     },
     clearMessages(state) {
@@ -39,5 +52,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addMessage, clearMessages } = chatSlice.actions;
+export const { addMessage, clearMessages, togglePinnedMessage } = chatSlice.actions;
 export default chatSlice.reducer;

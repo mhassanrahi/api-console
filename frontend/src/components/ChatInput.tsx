@@ -1,13 +1,15 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSocket } from '../utils/useSocket';
 import { useDispatch } from 'react-redux';
 import { addMessage, clearMessages } from '../features/chatSlice';
 import type { ChatMessage } from '../features/chatSlice';
 import CommandHistory from './CommandHistory';
+import CommandAutoComplete from './CommandAutoComplete';
 
 const ChatInput: React.FC = () => {
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showAutoComplete, setShowAutoComplete] = useState(false);
   const dispatch = useDispatch();
   
   const socketRef = useSocket(
@@ -70,23 +72,42 @@ const ChatInput: React.FC = () => {
     setInput(command);
   };
 
+  const handleAutoCompleteSelect = (command: string) => {
+    if (command) {
+      setInput(command);
+    }
+    setShowAutoComplete(false);
+  };
+
   return (
-    <div style={{ padding: 16, borderTop: '1px solid #eee', background: '#fafafa' }}>
+    <div style={{ padding: 16, borderTop: '1px solid #eee', background: '#fafafa', position: 'relative' }}>
       <form style={{ display: 'flex', gap: 8, alignItems: 'center' }} onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder={isProcessing ? "Processing..." : "Type a command... (e.g., get cat fact, get weather Berlin)"}
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          disabled={isProcessing}
-          style={{ 
-            flex: 1, 
-            padding: 8, 
-            borderRadius: 4, 
-            border: '1px solid #ccc',
-            opacity: isProcessing ? 0.6 : 1
-          }}
-        />
+        <div style={{ flex: 1, position: 'relative' }}>
+          <input
+            type="text"
+            placeholder={isProcessing ? "Processing..." : "Type a command... (e.g., get cat fact, get weather Berlin)"}
+            value={input}
+            onChange={e => {
+              setInput(e.target.value);
+              setShowAutoComplete(e.target.value.length > 0);
+            }}
+            onFocus={() => setShowAutoComplete(input.length > 0)}
+            onBlur={() => setTimeout(() => setShowAutoComplete(false), 200)}
+            disabled={isProcessing}
+            style={{ 
+              width: '100%',
+              padding: 8, 
+              borderRadius: 4, 
+              border: '1px solid #ccc',
+              opacity: isProcessing ? 0.6 : 1
+            }}
+          />
+          <CommandAutoComplete
+            inputValue={input}
+            onSelectSuggestion={handleAutoCompleteSelect}
+            isVisible={showAutoComplete && !isProcessing}
+          />
+        </div>
         <button 
           type="submit" 
           disabled={isProcessing}
