@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import Login from './Login.tsx';
-import SignUp from './SignUp.tsx';
-import ForgotPassword from './ForgotPassword.tsx';
-import VerifyEmail from './VerifyEmail.tsx';
+import Login from './Login';
+import SignUp from './SignUp';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
+import VerifyEmail from './VerifyEmail';
 import { UI_TEXT } from '../../constants';
 
-export type AuthScreen = 'login' | 'signup' | 'forgot' | 'verify';
+export type AuthScreen = 'login' | 'signup' | 'forgot' | 'reset' | 'verify';
 
 const AuthContainer: React.FC = () => {
   const [screen, setScreen] = useState<AuthScreen>('login');
@@ -19,6 +20,8 @@ const AuthContainer: React.FC = () => {
         return 'Create your account';
       case 'forgot':
         return 'Reset your password';
+      case 'reset':
+        return 'Set new password';
       case 'verify':
         return 'Verify your email';
       default:
@@ -47,7 +50,14 @@ const AuthContainer: React.FC = () => {
               <SignUp setScreen={setScreen} setEmail={setEmail} />
             )}
             {screen === 'forgot' && (
-              <ForgotPassword setScreen={setScreen} email={email} />
+              <ForgotPassword
+                setScreen={setScreen}
+                email={email}
+                setEmail={setEmail}
+              />
+            )}
+            {screen === 'reset' && (
+              <ResetPassword setScreen={setScreen} email={email} />
             )}
             {screen === 'verify' && (
               <VerifyEmail setScreen={setScreen} email={email} />

@@ -24,11 +24,13 @@ export {
   loginSchema,
   signUpSchema,
   forgotPasswordSchema,
+  resetPasswordSchema,
   verifyEmailSchema,
   getPasswordStrength,
   VALIDATION_MESSAGES,
   type LoginFormData,
   type SignUpFormData,
   type ForgotPasswordFormData,
+  type ResetPasswordFormData,
   type VerifyEmailFormData,
 } from './validation';

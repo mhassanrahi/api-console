@@ -50,6 +50,18 @@ export const forgotPasswordSchema = z.object({
   email: emailSchema,
 });
 
+// Reset password form schema (with verification code)
+export const resetPasswordSchema = z
+  .object({
+    code: verificationCodeSchema,
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+
 // Verify email form schema
 export const verifyEmailSchema = z.object({
   code: verificationCodeSchema,
@@ -59,6 +71,7 @@ export const verifyEmailSchema = z.object({
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type VerifyEmailFormData = z.infer<typeof verifyEmailSchema>;
 
 // Password strength indicator
