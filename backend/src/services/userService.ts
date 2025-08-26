@@ -1,4 +1,8 @@
-import { inMemoryStorage, UserPreferences, SearchHistory } from '../config/database';
+import {
+  inMemoryStorage,
+  UserPreferences,
+  SearchHistory,
+} from '../config/database';
 
 export class UserService {
   // Get user preferences
@@ -8,12 +12,15 @@ export class UserService {
     return {
       theme: 'light',
       defaultApis: ['Cat Facts', 'Weather'],
-      notifications: true
+      notifications: true,
     };
   }
 
   // Save user preferences
-  static async saveUserPreferences(userId: string, preferences: Partial<UserPreferences>): Promise<boolean> {
+  static async saveUserPreferences(
+    userId: string,
+    preferences: Partial<UserPreferences>
+  ): Promise<boolean> {
     try {
       // In a real app, this would save to database
       console.log('Saving preferences for user:', userId, preferences);
@@ -31,19 +38,22 @@ export class UserService {
     return [
       { id: 1, query: 'get weather Berlin', timestamp: Date.now() - 3600000 },
       { id: 2, query: 'get cat fact', timestamp: Date.now() - 7200000 },
-      { id: 3, query: 'search chuck kick', timestamp: Date.now() - 10800000 }
+      { id: 3, query: 'search chuck kick', timestamp: Date.now() - 10800000 },
     ];
   }
 
   // Save search query
-  static async saveSearchQuery(userId: string, query: string): Promise<SearchHistory> {
+  static async saveSearchQuery(
+    userId: string,
+    query: string
+  ): Promise<SearchHistory> {
     try {
       const searchHistory: SearchHistory = {
         id: Date.now(),
         query,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       // In a real app, this would save to database
       console.log('Saving search query for user:', userId, query);
       return searchHistory;
@@ -54,10 +64,18 @@ export class UserService {
   }
 
   // Delete search from history
-  static async deleteSearchFromHistory(userId: string, searchId: number): Promise<boolean> {
+  static async deleteSearchFromHistory(
+    userId: string,
+    searchId: number
+  ): Promise<boolean> {
     try {
       // In a real app, this would delete from database
-      console.log('Deleting search from history for user:', userId, 'searchId:', searchId);
+      console.log(
+        'Deleting search from history for user:',
+        userId,
+        'searchId:',
+        searchId
+      );
       return true;
     } catch (error) {
       console.error('Error deleting search from history:', error);

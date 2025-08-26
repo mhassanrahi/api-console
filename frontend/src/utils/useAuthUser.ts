@@ -11,7 +11,9 @@ export function useAuthUser() {
       .then(u => isMounted && setUser(u))
       .catch(() => isMounted && setUser(null))
       .finally(() => isMounted && setLoading(false));
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return { user, loading };

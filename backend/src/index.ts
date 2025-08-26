@@ -15,8 +15,8 @@ const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST']
-  }
+    methods: ['GET', 'POST'],
+  },
 });
 
 // Middleware
@@ -34,7 +34,9 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`🚀 Backend API server running on http://localhost:${PORT}`);
   console.log(`📡 WebSocket server ready for connections`);
-  console.log(`🔗 Connected clients: ${webSocketHandler.getConnectedClientsCount()}`);
+  console.log(
+    `🔗 Connected clients: ${webSocketHandler.getConnectedClientsCount()}`
+  );
 });
 
 // Graceful shutdown

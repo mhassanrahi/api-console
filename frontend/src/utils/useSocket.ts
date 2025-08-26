@@ -15,7 +15,7 @@ export function useSocket(onEvents?: (socket: Socket) => void) {
         transports: ['websocket'],
       });
       socketRef.current = socket;
-      
+
       // Let the component handle its own events
       if (onEvents) onEvents(socket);
     })();

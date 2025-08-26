@@ -32,7 +32,9 @@ const apiSelectionSlice = createSlice({
   reducers: {
     toggleApi(state, action: PayloadAction<ApiName>) {
       if (state.activeApis.includes(action.payload)) {
-        state.activeApis = state.activeApis.filter(api => api !== action.payload);
+        state.activeApis = state.activeApis.filter(
+          api => api !== action.payload
+        );
       } else {
         state.activeApis.push(action.payload);
       }

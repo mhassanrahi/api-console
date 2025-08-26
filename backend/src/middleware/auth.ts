@@ -14,13 +14,16 @@ export interface AuthenticatedSocket extends Socket {
   };
 }
 
-export const authenticateSocket = async (socket: Socket, next: (err?: Error) => void) => {
+export const authenticateSocket = async (
+  socket: Socket,
+  next: (err?: Error) => void
+) => {
   try {
     const token = socket.handshake.auth.token;
     if (!token) {
       throw new Error('No token provided');
     }
-    
+
     const payload = await verifier.verify(token);
     (socket as AuthenticatedSocket).data.user = payload;
     next();

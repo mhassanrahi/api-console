@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatInput from './components/ChatInput';
@@ -9,9 +8,10 @@ import type { RootState } from './store';
 import AuthContainer from './components/auth/AuthContainer';
 import { useAuthUser } from './utils/useAuthUser';
 
-
 const App: React.FC = () => {
-  const activeApis = useSelector((state: RootState) => state.apiSelection.activeApis);
+  const activeApis = useSelector(
+    (state: RootState) => state.apiSelection.activeApis
+  );
   const { user, loading } = useAuthUser();
   const [globalSearchTerm, setGlobalSearchTerm] = useState('');
 
@@ -23,11 +23,19 @@ const App: React.FC = () => {
       <Sidebar />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <GlobalSearch onSearch={setGlobalSearchTerm} />
-        <div style={{ flex: 1, display: 'flex', gap: 8, overflow: 'auto', padding: 8 }}>
-          {activeApis.map((api) => (
-            <ResultPanel 
-              key={api} 
-              apiName={api} 
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            gap: 8,
+            overflow: 'auto',
+            padding: 8,
+          }}
+        >
+          {activeApis.map(api => (
+            <ResultPanel
+              key={api}
+              apiName={api}
               globalSearchTerm={globalSearchTerm}
             />
           ))}

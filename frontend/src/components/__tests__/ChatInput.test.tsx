@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import ChatInput from '../ChatInput';
@@ -18,13 +24,15 @@ jest.mock('../../utils/useSocket', () => ({
 
 // Mock AWS Amplify
 jest.mock('aws-amplify/auth', () => ({
-  fetchAuthSession: jest.fn(() => Promise.resolve({
-    tokens: {
-      idToken: {
-        toString: () => 'mock-token'
-      }
-    }
-  })),
+  fetchAuthSession: jest.fn(() =>
+    Promise.resolve({
+      tokens: {
+        idToken: {
+          toString: () => 'mock-token',
+        },
+      },
+    })
+  ),
 }));
 
 const createTestStore = () => {
@@ -47,8 +55,9 @@ describe('ChatInput Component', () => {
     };
 
     // Mock the useSocket hook to return our mock socket
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { useSocket } = require('../../utils/useSocket');
-    useSocket.mockImplementation((callback) => {
+    useSocket.mockImplementation(callback => {
       if (callback) {
         callback(mockSocket);
       }
@@ -187,7 +196,7 @@ describe('ChatInput Component', () => {
         result: mockResponse.result,
         api: mockResponse.api,
         timestamp: mockResponse.timestamp,
-        pinned: false
+        pinned: false,
       });
       expect(state.chat.messages[0].id).toBeDefined();
     });
@@ -227,7 +236,7 @@ describe('ChatInput Component', () => {
 
   it('handles clear chat history', async () => {
     const store = createTestStore();
-    
+
     // Pre-populate with some messages
     store.dispatch({
       type: 'chat/addMessage',

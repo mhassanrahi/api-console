@@ -13,9 +13,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return [];
     const term = searchTerm.toLowerCase();
-    return messages.filter(msg => 
-      msg.command.toLowerCase().includes(term) || 
-      msg.result.toLowerCase().includes(term)
+    return messages.filter(
+      msg =>
+        msg.command.toLowerCase().includes(term) ||
+        msg.result.toLowerCase().includes(term)
     );
   }, [messages, searchTerm]);
 
@@ -25,42 +26,47 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
   };
 
   return (
-    <div style={{ 
-      padding: 16, 
-      borderBottom: '1px solid #eee', 
-      background: '#fff',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-    }}>
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <div
+      style={{
+        padding: 16,
+        borderBottom: '1px solid #eee',
+        background: '#fff',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      }}
+    >
+      <form
+        onSubmit={handleSearch}
+        style={{ display: 'flex', gap: 8, alignItems: 'center' }}
+      >
         <input
-          type="text"
-          placeholder="Search across all APIs..."
+          type='text'
+          placeholder='Search across all APIs...'
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           style={{
             flex: 1,
             padding: '8px 12px',
             border: '1px solid #ddd',
             borderRadius: 6,
-            fontSize: 14
+            fontSize: 14,
           }}
         />
         <button
-          type="submit"
+          type='submit'
           style={{
             padding: '8px 16px',
             background: '#007bff',
             color: '#fff',
             border: 'none',
             borderRadius: 6,
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           Search
         </button>
         {searchTerm && (
           <button
-            type="button"
+            type='button'
             onClick={() => {
               setSearchTerm('');
               onSearch('');
@@ -71,7 +77,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
               color: '#fff',
               border: 'none',
               borderRadius: 6,
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Clear
@@ -80,7 +86,8 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
       </form>
       {searchResults.length > 0 && (
         <div style={{ marginTop: 12, fontSize: 12, color: '#666' }}>
-          Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} across all APIs
+          Found {searchResults.length} result
+          {searchResults.length !== 1 ? 's' : ''} across all APIs
         </div>
       )}
     </div>

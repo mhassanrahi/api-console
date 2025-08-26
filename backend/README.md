@@ -25,6 +25,7 @@ src/
 ## 🚀 Features
 
 ### REST API Endpoints
+
 - `GET /api/health` - Health check
 - `GET /api/user/preferences` - Get user preferences
 - `POST /api/user/preferences` - Save user preferences
@@ -33,6 +34,7 @@ src/
 - `DELETE /api/searches/:id` - Delete search from history
 
 ### WebSocket Events
+
 - `chat_command` - Process chat commands
 - `api_response` - Send API responses
 - `command_status` - Send processing status
@@ -40,6 +42,7 @@ src/
 - `clear_chat_history` - Clear chat history
 
 ### Supported Commands
+
 - `get cat fact` - Get random cat facts
 - `get chuck joke` - Get Chuck Norris jokes
 - `search chuck [term]` - Search Chuck Norris jokes
@@ -88,11 +91,13 @@ npm start
 ## 🔧 Configuration
 
 ### Environment Variables
+
 - `PORT` - Server port (default: 3001)
 - `AWS_COGNITO_USER_POOL_ID` - AWS Cognito User Pool ID
 - `AWS_COGNITO_CLIENT_ID` - AWS Cognito Client ID
 
 ### AWS Cognito Setup
+
 The application uses AWS Cognito for authentication. Configure your Cognito User Pool and Client ID in the `middleware/auth.ts` file.
 
 ## 🧪 Testing
@@ -104,39 +109,42 @@ npm test
 ## 📝 API Documentation
 
 ### Authentication
+
 All WebSocket connections require JWT authentication via AWS Cognito. Include the token in the connection handshake:
 
 ```javascript
 const socket = io('http://localhost:3001', {
   auth: {
-    token: 'your-jwt-token'
-  }
+    token: 'your-jwt-token',
+  },
 });
 ```
 
 ### WebSocket Events
 
 #### Sending Commands
+
 ```javascript
 socket.emit('chat_command', {
   command: 'get cat fact',
-  timestamp: Date.now()
+  timestamp: Date.now(),
 });
 ```
 
 #### Receiving Responses
+
 ```javascript
-socket.on('api_response', (data) => {
+socket.on('api_response', data => {
   console.log('API Response:', data);
   // data: { command, result, api, timestamp }
 });
 
-socket.on('command_status', (data) => {
+socket.on('command_status', data => {
   console.log('Status:', data.status);
   // status: 'processing' | 'success' | 'error'
 });
 
-socket.on('typing_indicator', (data) => {
+socket.on('typing_indicator', data => {
   console.log('Typing:', data.isProcessing);
 });
 ```
@@ -144,6 +152,7 @@ socket.on('typing_indicator', (data) => {
 ## 🔄 Architecture
 
 ### Modular Design
+
 The application follows a modular architecture with clear separation of concerns:
 
 1. **Controllers** - Handle business logic
@@ -153,11 +162,13 @@ The application follows a modular architecture with clear separation of concerns
 5. **Socket Handlers** - Manage WebSocket connections and events
 
 ### Error Handling
+
 - Comprehensive error handling in all modules
 - Graceful degradation for external API failures
 - Proper error responses to clients
 
 ### Scalability
+
 - Modular structure allows easy scaling
 - Service layer can be easily extended
 - WebSocket handler supports multiple connections

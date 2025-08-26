@@ -25,17 +25,17 @@ const chatSlice = createSlice({
     addMessage(state, action: PayloadAction<ChatMessage>) {
       // Check for duplicate messages to prevent duplicates
       const isDuplicate = state.messages.some(
-        msg => 
-          msg.command === action.payload.command && 
-          msg.api === action.payload.api && 
+t        msg =>
+          msg.command === action.payload.command &&
+          msg.api === action.payload.api &&
           msg.timestamp === action.payload.timestamp
       );
-      
+
       if (!isDuplicate) {
         const messageWithId = {
           ...action.payload,
           id: `${action.payload.api}-${action.payload.timestamp}-${Date.now()}`,
-          pinned: false
+          pinned: false,
         };
         state.messages.push(messageWithId);
       }
@@ -52,5 +52,6 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addMessage, clearMessages, togglePinnedMessage } = chatSlice.actions;
+export const { addMessage, clearMessages, togglePinnedMessage } =
+  chatSlice.actions;
 export default chatSlice.reducer;

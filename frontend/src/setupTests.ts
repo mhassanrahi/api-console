@@ -2,13 +2,15 @@ import '@testing-library/jest-dom';
 
 // Mock AWS Amplify globally
 jest.mock('aws-amplify/auth', () => ({
-  fetchAuthSession: jest.fn(() => Promise.resolve({
-    tokens: {
-      idToken: {
-        toString: () => 'mock-token'
-      }
-    }
-  })),
+  fetchAuthSession: jest.fn(() =>
+    Promise.resolve({
+      tokens: {
+        idToken: {
+          toString: () => 'mock-token',
+        },
+      },
+    })
+  ),
   signIn: jest.fn(),
   signOut: jest.fn(),
   getCurrentUser: jest.fn(),

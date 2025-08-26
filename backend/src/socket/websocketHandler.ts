@@ -21,7 +21,7 @@ export class WebSocketHandler {
       console.log('WebSocket client connected:', socket.id);
 
       // Handle chat commands
-      socket.on('chat_command', async (data) => {
+      socket.on('chat_command', async data => {
         await this.handleChatCommand(socket, data);
       });
 
@@ -35,16 +35,22 @@ export class WebSocketHandler {
   private async handleChatCommand(socket: AuthenticatedSocket, data: any) {
     try {
       console.log('Received command:', data);
-      
+
       // Send processing status
       socket.emit('command_status', { status: 'processing' });
       socket.emit('typing_indicator', { isProcessing: true });
 
       // Process the command
-      const result = await CommandController.processCommand(data.command, socket);
+      const result = await CommandController.processCommand(
+        data.command,
+        socket
+      );
 
       // Handle special system commands
-      if (result.api === 'System' && result.result === 'Chat history cleared.') {
+      if (
+        result.api === 'System' &&
+        result.result === 'Chat history cleared.'
+      ) {
         socket.emit('clear_chat_history');
       }
 
@@ -59,14 +65,14 @@ export class WebSocketHandler {
       // Send success status
       socket.emit('command_status', { status: 'success' });
       socket.emit('typing_indicator', { isProcessing: false });
-
     } catch (error) {
       console.error('Error processing command:', error);
-      
+
       // Send error status
-      socket.emit('command_status', { 
-        status: 'error', 
-        error: error instanceof Error ? error.message : 'An unknown error occurred' 
+      socket.emit('command_status', {
+        status: 'error',
+        error:
+          error instanceof Error ? error.message : 'An unknown error occurred',
       });
       socket.emit('typing_indicator', { isProcessing: false });
     }

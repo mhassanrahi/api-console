@@ -26,7 +26,7 @@ router.post('/user/preferences', async (req: Request, res: Response) => {
     // TODO: Get actual user ID from JWT token
     const userId = 'default'; // This should come from authenticated user
     const success = await UserService.saveUserPreferences(userId, req.body);
-    
+
     if (success) {
       res.json({ success: true, message: 'Preferences saved' });
     } else {
@@ -57,7 +57,7 @@ router.post('/searches', async (req: Request, res: Response) => {
     if (!query) {
       return res.status(400).json({ error: 'Query is required' });
     }
-    
+
     // TODO: Get actual user ID from JWT token
     const userId = 'default'; // This should come from authenticated user
     const searchHistory = await UserService.saveSearchQuery(userId, query);
@@ -65,7 +65,7 @@ router.post('/searches', async (req: Request, res: Response) => {
       success: true,
       id: searchHistory.id,
       query: searchHistory.query,
-      timestamp: searchHistory.timestamp
+      timestamp: searchHistory.timestamp,
     });
   } catch (error) {
     console.error('Error saving search query:', error);
@@ -77,15 +77,15 @@ router.delete('/searches/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const searchId = parseInt(id);
-    
+
     if (isNaN(searchId)) {
       return res.status(400).json({ error: 'Invalid search ID' });
     }
-    
+
     // TODO: Get actual user ID from JWT token
     const userId = 'default'; // This should come from authenticated user
     const success = await UserService.deleteSearchFromHistory(userId, searchId);
-    
+
     if (success) {
       res.json({ success: true, message: 'Search deleted' });
     } else {
