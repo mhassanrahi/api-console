@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { togglePinnedMessage } from '../features/chatSlice';
+import { UI_TEXT } from '../constants';
 
 interface ResultPanelProps {
   apiName: string;
@@ -86,7 +87,7 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
         {pinnedMessages.length > 0 && (
           <div>
             <h4 className='text-xs font-semibold text-gray-600 mb-3 flex items-center gap-2 uppercase tracking-wide'>
-              📌 Pinned Messages
+              📌 {UI_TEXT.LABELS.PINNED_MESSAGES}
             </h4>
             <div className='space-y-3'>
               {pinnedMessages.map(msg => (
@@ -159,10 +160,10 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
               <div className='text-2xl'>🔍</div>
             </div>
             <h4 className='text-gray-700 font-medium mb-2'>
-              No results match your search
+              {UI_TEXT.MESSAGES.NO_SEARCH_RESULTS.TITLE}
             </h4>
             <p className='text-gray-500 text-sm'>
-              Try adjusting your search terms
+              {UI_TEXT.MESSAGES.NO_SEARCH_RESULTS.DESCRIPTION}
             </p>
           </div>
         ) : (
@@ -170,9 +171,11 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
             <div className='w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center'>
               <div className='text-2xl'>📝</div>
             </div>
-            <h4 className='text-gray-700 font-medium mb-2'>No results yet</h4>
+            <h4 className='text-gray-700 font-medium mb-2'>
+              {UI_TEXT.MESSAGES.NO_RESULTS.TITLE}
+            </h4>
             <p className='text-gray-500 text-sm'>
-              Start chatting to see results here
+              {UI_TEXT.MESSAGES.NO_RESULTS.DESCRIPTION}
             </p>
           </div>
         )}

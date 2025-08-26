@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-interface CommandSuggestion {
-  command: string;
-  description: string;
-  category: string;
-}
+import { COMMAND_SUGGESTIONS, getCategoryColor, UI_TEXT } from '../constants';
 
 interface CommandAutoCompleteProps {
   inputValue: string;
@@ -12,73 +7,13 @@ interface CommandAutoCompleteProps {
   isVisible: boolean;
 }
 
-const COMMAND_SUGGESTIONS: CommandSuggestion[] = [
-  {
-    command: 'get cat fact',
-    description: 'Get a random cat fact',
-    category: 'Fun',
-  },
-  {
-    command: 'get chuck joke',
-    description: 'Get a Chuck Norris joke',
-    category: 'Fun',
-  },
-  {
-    command: 'search chuck',
-    description: 'Search Chuck Norris jokes',
-    category: 'Fun',
-  },
-  {
-    command: 'get activity',
-    description: 'Get a random activity suggestion',
-    category: 'Fun',
-  },
-  {
-    command: 'search github',
-    description: 'Search GitHub users',
-    category: 'Development',
-  },
-  {
-    command: 'get weather',
-    description: 'Get weather for a city',
-    category: 'Weather',
-  },
-  {
-    command: 'define',
-    description: 'Get word definition',
-    category: 'Reference',
-  },
-  {
-    command: 'get my preferences',
-    description: 'Get user preferences',
-    category: 'User',
-  },
-  {
-    command: 'save search',
-    description: 'Save a search query',
-    category: 'User',
-  },
-  {
-    command: 'get search history',
-    description: 'Get search history',
-    category: 'User',
-  },
-  { command: 'clear', description: 'Clear chat history', category: 'System' },
-  {
-    command: 'help',
-    description: 'Show available commands',
-    category: 'System',
-  },
-];
-
 const CommandAutoComplete: React.FC<CommandAutoCompleteProps> = ({
   inputValue,
   onSelectSuggestion,
   isVisible,
 }) => {
-  const [filteredSuggestions, setFilteredSuggestions] = useState<
-    CommandSuggestion[]
-  >([]);
+  const [filteredSuggestions, setFilteredSuggestions] =
+    useState(COMMAND_SUGGESTIONS);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -137,18 +72,6 @@ const CommandAutoComplete: React.FC<CommandAutoCompleteProps> = ({
     return null;
   }
 
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      Fun: '#ff6b6b',
-      Development: '#4ecdc4',
-      Weather: '#45b7d1',
-      Reference: '#96ceb4',
-      User: '#feca57',
-      System: '#ff9ff3',
-    };
-    return colors[category] || '#95a5a6';
-  };
-
   return (
     <div
       ref={containerRef}
@@ -169,7 +92,7 @@ const CommandAutoComplete: React.FC<CommandAutoCompleteProps> = ({
     >
       <div style={{ padding: 8, borderBottom: '1px solid #eee' }}>
         <div style={{ fontSize: 12, color: '#666', fontWeight: 500 }}>
-          💡 Command Suggestions ({filteredSuggestions.length})
+          💡 {UI_TEXT.LABELS.COMMAND_SUGGESTIONS} ({filteredSuggestions.length})
         </div>
       </div>
 
@@ -245,7 +168,7 @@ const CommandAutoComplete: React.FC<CommandAutoCompleteProps> = ({
           textAlign: 'center',
         }}
       >
-        Use ↑↓ to navigate, Enter to select, Esc to close
+        {UI_TEXT.SHORTCUTS.AUTOCOMPLETE}
       </div>
     </div>
   );

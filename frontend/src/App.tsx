@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from './store';
 import AuthContainer from './components/auth/AuthContainer';
 import { useAuthUser } from './utils/useAuthUser';
+import { UI_TEXT } from './constants';
 
 const App: React.FC = () => {
   const activeApis = useSelector(
@@ -41,11 +42,10 @@ const App: React.FC = () => {
                   <div className='text-4xl'>🔧</div>
                 </div>
                 <h3 className='text-xl font-semibold text-gray-800 mb-2'>
-                  No APIs Selected
+                  {UI_TEXT.MESSAGES.NO_APIS_SELECTED.TITLE}
                 </h3>
                 <p className='text-gray-600 text-sm leading-relaxed'>
-                  Select APIs from the sidebar to start using the application
-                  and explore different data sources.
+                  {UI_TEXT.MESSAGES.NO_APIS_SELECTED.DESCRIPTION}
                 </p>
               </div>
             </div>

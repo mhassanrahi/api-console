@@ -5,6 +5,7 @@ import { addMessage, clearMessages } from '../features/chatSlice';
 import type { ChatMessage } from '../features/chatSlice';
 import CommandHistory from './CommandHistory';
 import CommandAutoComplete from './CommandAutoComplete';
+import { PROCESSING_MESSAGES, UI_TEXT } from '../constants';
 
 const ChatInput: React.FC = () => {
   const [input, setInput] = useState('');
@@ -32,18 +33,12 @@ const ChatInput: React.FC = () => {
   // Processing message animation
   useEffect(() => {
     if (isProcessing) {
-      const messages = [
-        'Processing your command',
-        'Fetching data from API',
-        'Analyzing response',
-        'Preparing results',
-      ];
       let index = 0;
-      setProcessingMessage(messages[0]);
+      setProcessingMessage(PROCESSING_MESSAGES[0]);
 
       const interval = setInterval(() => {
-        index = (index + 1) % messages.length;
-        setProcessingMessage(messages[index]);
+        index = (index + 1) % PROCESSING_MESSAGES.length;
+        setProcessingMessage(PROCESSING_MESSAGES[index]);
       }, 2000);
 
       return () => clearInterval(interval);
@@ -182,8 +177,8 @@ const ChatInput: React.FC = () => {
               type='text'
               placeholder={
                 isProcessing
-                  ? `Processing${getTypingIndicator()}`
-                  : 'Type a command... (e.g., get cat fact, get weather Berlin)'
+                  ? `${UI_TEXT.PLACEHOLDERS.PROCESSING}${getTypingIndicator()}`
+                  : UI_TEXT.PLACEHOLDERS.COMMAND_INPUT
               }
               value={input}
               onChange={e => {
@@ -235,12 +230,12 @@ const ChatInput: React.FC = () => {
               {isProcessing ? (
                 <>
                   <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
-                  Processing
+                  {UI_TEXT.BUTTONS.PROCESSING}
                 </>
               ) : (
                 <>
                   <span className='text-lg'>📤</span>
-                  Send
+                  {UI_TEXT.BUTTONS.SEND}
                 </>
               )}
             </button>
@@ -260,7 +255,7 @@ const ChatInput: React.FC = () => {
                   {getTypingIndicator()}
                 </div>
                 <div className='text-blue-600 text-xs'>
-                  This may take a few seconds...
+                  {UI_TEXT.MESSAGES.PROCESSING.TITLE}
                 </div>
               </div>
             </div>
@@ -269,8 +264,8 @@ const ChatInput: React.FC = () => {
 
         {/* Keyboard shortcuts help */}
         <div className='mt-3 text-center text-xs text-gray-500'>
-          💡 <strong>Ctrl+↑/↓</strong> to navigate command history •{' '}
-          <strong>Esc</strong> to clear
+          💡 <strong>{UI_TEXT.SHORTCUTS.HISTORY_NAVIGATION}</strong> •{' '}
+          <strong>{UI_TEXT.SHORTCUTS.CLEAR}</strong>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
+import { UI_TEXT } from '../constants';
 
 interface GlobalSearchProps {
   onSearch: (term: string) => void;
@@ -32,7 +33,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
           <div className='flex-1 relative'>
             <input
               type='text'
-              placeholder='Search across all APIs...'
+              placeholder={UI_TEXT.PLACEHOLDERS.SEARCH}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className='w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 bg-gray-50 focus:bg-white'
@@ -43,9 +44,9 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
           </div>
           <button
             type='submit'
-            className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 cursor-pointer'
+            className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5'
           >
-            Search
+            {UI_TEXT.BUTTONS.SEARCH}
           </button>
           {searchTerm && (
             <button
@@ -56,7 +57,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ onSearch }) => {
               }}
               className='bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'
             >
-              Clear
+              {UI_TEXT.BUTTONS.CLEAR}
             </button>
           )}
         </form>

@@ -1,6 +1,12 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
+import {
+  COMMON_COMMANDS,
+  HELP_CONTENT,
+  getCategoryColor,
+  UI_TEXT,
+} from '../constants';
 
 interface CommandHistoryProps {
   onSelectCommand: (command: string) => void;
@@ -40,91 +46,6 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
       .slice(0, 10);
   }, [messages]);
 
-  const commonCommands = [
-    {
-      command: 'get cat fact',
-      category: 'Fun',
-      description: 'Get a random cat fact',
-    },
-    {
-      command: 'get chuck joke',
-      category: 'Fun',
-      description: 'Get a Chuck Norris joke',
-    },
-    {
-      command: 'get activity',
-      category: 'Fun',
-      description: 'Get a random activity',
-    },
-    {
-      command: 'get weather Berlin',
-      category: 'Weather',
-      description: 'Get weather for Berlin',
-    },
-    {
-      command: 'search github john',
-      category: 'Development',
-      description: 'Search GitHub users',
-    },
-    {
-      command: 'define hello',
-      category: 'Reference',
-      description: 'Get word definition',
-    },
-    {
-      command: 'get my preferences',
-      category: 'User',
-      description: 'Get user preferences',
-    },
-    {
-      command: 'get search history',
-      category: 'User',
-      description: 'Get search history',
-    },
-    { command: 'clear', category: 'System', description: 'Clear chat history' },
-    {
-      command: 'help',
-      category: 'System',
-      description: 'Show available commands',
-    },
-  ];
-
-  const helpContent = [
-    {
-      category: 'Weather Commands',
-      commands: [
-        { cmd: 'get weather [city]', desc: 'Get weather for a specific city' },
-        { cmd: 'get weather Berlin', desc: 'Get weather for Berlin' },
-      ],
-    },
-    {
-      category: 'Fun & Entertainment',
-      commands: [
-        { cmd: 'get cat fact', desc: 'Get a random cat fact' },
-        { cmd: 'get chuck joke', desc: 'Get a Chuck Norris joke' },
-        { cmd: 'search chuck [term]', desc: 'Search Chuck Norris jokes' },
-        { cmd: 'get activity', desc: 'Get a random activity suggestion' },
-      ],
-    },
-    {
-      category: 'Development & Search',
-      commands: [
-        { cmd: 'search github [username]', desc: 'Search GitHub users' },
-        { cmd: 'define [word]', desc: 'Get word definition' },
-      ],
-    },
-    {
-      category: 'User & System',
-      commands: [
-        { cmd: 'get my preferences', desc: 'Get user preferences' },
-        { cmd: 'save search [query]', desc: 'Save a search query' },
-        { cmd: 'get search history', desc: 'Get search history' },
-        { cmd: 'clear', desc: 'Clear chat history' },
-        { cmd: 'help', desc: 'Show this help' },
-      ],
-    },
-  ];
-
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -134,18 +55,6 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return date.toLocaleDateString();
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      Fun: '#ff6b6b',
-      Weather: '#45b7d1',
-      Development: '#4ecdc4',
-      Reference: '#96ceb4',
-      User: '#feca57',
-      System: '#ff9ff3',
-    };
-    return colors[category] || '#95a5a6';
   };
 
   // Handle click outside to close popup
@@ -256,7 +165,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
         className='bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md cursor-pointer'
       >
         <span className='text-lg'>📋</span>
-        <span className='text-sm'>History & Help</span>
+        <span className='text-sm'>{UI_TEXT.BUTTONS.HISTORY_HELP}</span>
         {recentCommands.length > 0 && (
           <span className='bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center'>
             {recentCommands.length}
@@ -273,9 +182,17 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
           {/* Tab Navigation */}
           <div className='bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200'>
             {[
-              { key: 'recent', label: 'Recent', count: recentCommands.length },
-              { key: 'common', label: 'Common', count: commonCommands.length },
-              { key: 'help', label: 'Help', count: 0 },
+              {
+                key: 'recent',
+                label: UI_TEXT.TABS.RECENT,
+                count: recentCommands.length,
+              },
+              {
+                key: 'common',
+                label: UI_TEXT.TABS.COMMON,
+                count: COMMON_COMMANDS.length,
+              },
+              { key: 'help', label: UI_TEXT.TABS.HELP, count: 0 },
             ].map(tab => (
               <button
                 key={tab.key}
@@ -342,10 +259,10 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                       <div className='text-xl'>📝</div>
                     </div>
                     <div className='text-gray-600 font-medium mb-1'>
-                      No recent commands
+                      {UI_TEXT.MESSAGES.NO_RECENT_COMMANDS.TITLE}
                     </div>
                     <div className='text-gray-500 text-sm'>
-                      Start chatting to see your history
+                      {UI_TEXT.MESSAGES.NO_RECENT_COMMANDS.DESCRIPTION}
                     </div>
                   </div>
                 )}
@@ -355,7 +272,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
             {activeTab === 'common' && (
               <div className='p-4'>
                 <div className='space-y-2'>
-                  {commonCommands.map((cmd, index) => (
+                  {COMMON_COMMANDS.map((cmd, index) => (
                     <button
                       key={index}
                       onClick={() => {
@@ -389,9 +306,9 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
             {activeTab === 'help' && (
               <div className='p-4'>
                 <div className='text-sm font-semibold text-gray-800 mb-4'>
-                  Available Commands
+                  {UI_TEXT.LABELS.AVAILABLE_COMMANDS}
                 </div>
-                {helpContent.map((section, index) => (
+                {HELP_CONTENT.map((section, index) => (
                   <div key={index} className='mb-6'>
                     <div
                       className='text-xs font-semibold mb-3 uppercase tracking-wide'
