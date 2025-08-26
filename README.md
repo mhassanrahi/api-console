@@ -1,19 +1,19 @@
-# 🎯 Reactive API Console via Chat Interface
+# Reactive API Console via Chat Interface
 
 A modern, real-time API explorer tool that allows users to interact with multiple APIs through a chat-style interface. Built with React, Node.js, and WebSocket technology for seamless real-time communication.
 
-## 🌟 Features
+##  Features
 
 - **🔌 Multi-API Support**: Choose from 6+ public APIs (Weather, Cat Facts, Chuck Norris Jokes, etc.)
 - **💬 Chat Interface**: Natural language commands like `get weather Berlin` or `search github john`
-- **📺 Isolated Result Panels**: Each API gets its own dedicated panel for results
-- **🔍 Real-time Search**: Filter results globally or within individual panels
-- **🔐 Authentication**: Secure login with AWS Cognito integration
-- **⚡ Real-time Updates**: WebSocket-powered live chat and API responses
-- **📱 Modern UI**: Beautiful, responsive design with Tailwind CSS
-- **🔒 Form Validation**: Robust validation with React Hook Form + Zod
+- ** Isolated Result Panels**: Each API gets its own dedicated panel for results
+- ** Real-time Search**: Filter results globally or within individual panels
+- ** Authentication**: Secure login with AWS Cognito integration
+- ** Real-time Updates**: WebSocket-powered live chat and API responses
+- ** Modern UI**: Beautiful, responsive design with Tailwind CSS
+- ** Form Validation**: Robust validation with React Hook Form + Zod
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 19** - UI framework with hooks
@@ -45,7 +45,7 @@ A modern, real-time API explorer tool that allows users to interact with multipl
   - Weather API (Open-Meteo)
   - Custom Backend API
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - **Node.js** (v18 or higher)
@@ -99,7 +99,7 @@ npm run dev
 - **Backend**: http://localhost:3001
 - **WebSocket**: ws://localhost:3001
 
-## ⚙️ Environment Configuration
+## Environment Configuration
 
 ### Backend (.env)
 ```env
@@ -131,7 +131,7 @@ VITE_COGNITO_USER_POOL_ID=your-user-pool-id
 VITE_COGNITO_CLIENT_ID=your-client-id
 ```
 
-## 📱 Usage Guide
+## Usage Guide
 
 ### Authentication
 1. **Sign Up**: Create a new account with email verification
@@ -155,7 +155,7 @@ VITE_COGNITO_CLIENT_ID=your-client-id
 - **Command History**: Access recent commands and suggestions
 - **Auto-complete**: Get command suggestions as you type
 
-## 🧪 Testing
+## Testing
 
 ### Frontend Tests
 ```bash
@@ -179,7 +179,7 @@ cd frontend
 npm run test:e2e      # Run Cypress E2E tests
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 api-console/
@@ -208,7 +208,7 @@ api-console/
 └── README.md
 ```
 
-## 🔧 Available Scripts
+## Available Scripts
 
 ### Frontend
 ```bash
@@ -230,7 +230,7 @@ npm run lint         # Run ESLint
 npm run format       # Format code with Prettier
 ```
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### Public APIs
 - **Cat Facts**: `GET https://catfact.ninja/fact`
