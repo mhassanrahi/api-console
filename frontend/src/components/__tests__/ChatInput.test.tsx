@@ -57,7 +57,7 @@ describe('ChatInput Component', () => {
     // Mock the useSocket hook to return our mock socket
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { useSocket } = require('../../utils/useSocket');
-    useSocket.mockImplementation(callback => {
+    useSocket.mockImplementation((callback: (socket: any) => void) => {
       if (callback) {
         callback(mockSocket);
       }
@@ -139,7 +139,7 @@ describe('ChatInput Component', () => {
 
     // Simulate the processing state by triggering the command_status event
     const processingCallback = mockSocket.on.mock.calls.find(
-      call => call[0] === 'command_status'
+      (call: any[]) => call[0] === 'command_status'
     )?.[1];
 
     if (processingCallback) {
@@ -179,7 +179,7 @@ describe('ChatInput Component', () => {
 
     // Find the callback that was registered for 'api_response'
     const apiResponseCallback = mockSocket.on.mock.calls.find(
-      call => call[0] === 'api_response'
+      (call: any[]) => call[0] === 'api_response'
     )?.[1];
 
     if (apiResponseCallback) {
@@ -217,7 +217,7 @@ describe('ChatInput Component', () => {
     };
 
     const errorCallback = mockSocket.on.mock.calls.find(
-      call => call[0] === 'command_status'
+      (call: any[]) => call[0] === 'command_status'
     )?.[1];
 
     if (errorCallback) {
@@ -256,7 +256,7 @@ describe('ChatInput Component', () => {
 
     // Simulate clear chat history event
     const clearCallback = mockSocket.on.mock.calls.find(
-      call => call[0] === 'clear_chat_history'
+      (call: any[]) => call[0] === 'clear_chat_history'
     )?.[1];
 
     if (clearCallback) {
@@ -281,7 +281,7 @@ describe('ChatInput Component', () => {
 
     // Simulate processing state
     const processingCallback = mockSocket.on.mock.calls.find(
-      call => call[0] === 'command_status'
+      (call: any[]) => call[0] === 'command_status'
     )?.[1];
 
     if (processingCallback) {
