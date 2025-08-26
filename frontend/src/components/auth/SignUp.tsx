@@ -1,30 +1,53 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { signUp } from 'aws-amplify/auth';
 import type { AuthScreen } from './AuthContainer';
+import { signUpSchema, type SignUpFormData } from '../../constants/validation';
+import FormField from '../common/FormField';
+import PasswordStrengthIndicator from '../common/PasswordStrengthIndicator';
 
 const SignUp: React.FC<{
   setScreen: (s: AuthScreen) => void;
   setEmail: (e: string) => void;
 }> = ({ setScreen, setEmail }) => {
-  const [email, setEmailLocal] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    mode: 'onChange',
+  });
+
+  const watchedEmail = watch('email');
+  const watchedPassword = watch('password');
+
+  // Update parent email state when email changes
+  React.useEffect(() => {
+    if (watchedEmail) {
+      setEmail(watchedEmail);
+    }
+  }, [watchedEmail, setEmail]);
+
+  const onSubmit = async (data: SignUpFormData) => {
     setLoading(true);
-    setError('');
+    setApiError('');
+
     try {
       await signUp({
-        username: email,
-        password,
-        options: { userAttributes: { email } },
+        username: data.email,
+        password: data.password,
+        options: { userAttributes: { email: data.email } },
       });
-      setEmail(email);
+      setEmail(data.email);
       setScreen('verify');
     } catch (err: any) {
-      setError(err.message || 'Sign up failed');
+      setApiError(err.message || 'Sign up failed');
       console.log(err);
     } finally {
       setLoading(false);
@@ -32,63 +55,73 @@ const SignUp: React.FC<{
   };
 
   return (
-    <form onSubmit={handleSignUp} className='space-y-6'>
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
       {/* Email Input */}
-      <div>
-        <label
-          htmlFor='signup-email'
-          className='block text-sm font-medium text-gray-700 mb-2'
-        >
-          Email address
-        </label>
+      <FormField
+        label='Email address'
+        name='email'
+        type='email'
+        placeholder='Enter your email'
+        error={errors.email}
+        required
+      >
         <input
-          id='signup-email'
+          {...register('email')}
           type='email'
           placeholder='Enter your email'
-          value={email}
-          onChange={e => {
-            setEmailLocal(e.target.value);
-            setEmail(e.target.value);
-          }}
-          required
-          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+          className='w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
         />
-      </div>
+      </FormField>
 
       {/* Password Input */}
-      <div>
-        <label
-          htmlFor='signup-password'
-          className='block text-sm font-medium text-gray-700 mb-2'
-        >
-          Password
-        </label>
+      <FormField
+        label='Password'
+        name='password'
+        type='password'
+        placeholder='Create a password'
+        error={errors.password}
+        required
+      >
         <input
-          id='signup-password'
+          {...register('password')}
           type='password'
           placeholder='Create a password'
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+          className='w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
         />
-        <p className='mt-2 text-xs text-gray-500'>
-          Password must be at least 8 characters long
-        </p>
-      </div>
+      </FormField>
 
-      {/* Error Message */}
-      {error && (
+      {/* Password Strength Indicator */}
+      <PasswordStrengthIndicator password={watchedPassword || ''} />
+
+      {/* Confirm Password Input */}
+      <FormField
+        label='Confirm Password'
+        name='confirmPassword'
+        type='password'
+        placeholder='Confirm your password'
+        error={errors.confirmPassword}
+        required
+      >
+        <input
+          {...register('confirmPassword')}
+          type='password'
+          placeholder='Confirm your password'
+          className='w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+        />
+      </FormField>
+
+      {/* API Error Message */}
+      {apiError && (
         <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
-          <p className='text-red-600 text-sm'>{error}</p>
+          <p className='text-red-600 text-sm'>{apiError}</p>
         </div>
       )}
 
       {/* Sign Up Button */}
       <button
         type='submit'
-        disabled={loading}
-        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+        disabled={loading || !isValid}
+        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
       >
         {loading ? (
           <div className='flex items-center justify-center'>

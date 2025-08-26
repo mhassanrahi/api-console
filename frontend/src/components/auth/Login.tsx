@@ -1,85 +1,99 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'aws-amplify/auth';
 import type { AuthScreen } from './AuthContainer';
+import { loginSchema, type LoginFormData } from '../../constants/validation';
+import FormField from '../common/FormField';
 
 const Login: React.FC<{
   setScreen: (s: AuthScreen) => void;
   setEmail: (e: string) => void;
 }> = ({ setScreen, setEmail }) => {
-  const [email, setEmailLocal] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onChange',
+  });
+
+  const watchedEmail = watch('email');
+
+  // Update parent email state when email changes
+  React.useEffect(() => {
+    if (watchedEmail) {
+      setEmail(watchedEmail);
+    }
+  }, [watchedEmail, setEmail]);
+
+  const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
-    setError('');
+    setApiError('');
+
     try {
-      await signIn({ username: email, password });
+      await signIn({ username: data.email, password: data.password });
       window.location.reload();
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setApiError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin} className='space-y-6'>
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
       {/* Email Input */}
-      <div>
-        <label
-          htmlFor='email'
-          className='block text-sm font-medium text-gray-700 mb-2'
-        >
-          Email address
-        </label>
+      <FormField
+        label='Email address'
+        name='email'
+        type='email'
+        placeholder='Enter your email'
+        error={errors.email}
+        required
+      >
         <input
-          id='email'
+          {...register('email')}
           type='email'
           placeholder='Enter your email'
-          value={email}
-          onChange={e => {
-            setEmailLocal(e.target.value);
-            setEmail(e.target.value);
-          }}
-          required
-          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+          className='w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
         />
-      </div>
+      </FormField>
 
       {/* Password Input */}
-      <div>
-        <label
-          htmlFor='password'
-          className='block text-sm font-medium text-gray-700 mb-2'
-        >
-          Password
-        </label>
+      <FormField
+        label='Password'
+        name='password'
+        type='password'
+        placeholder='Enter your password'
+        error={errors.password}
+        required
+      >
         <input
-          id='password'
+          {...register('password')}
           type='password'
           placeholder='Enter your password'
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+          className='w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
         />
-      </div>
+      </FormField>
 
-      {/* Error Message */}
-      {error && (
+      {/* API Error Message */}
+      {apiError && (
         <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
-          <p className='text-red-600 text-sm'>{error}</p>
+          <p className='text-red-600 text-sm'>{apiError}</p>
         </div>
       )}
 
       {/* Login Button */}
       <button
         type='submit'
-        disabled={loading}
-        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed'
+        disabled={loading || !isValid}
+        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
       >
         {loading ? (
           <div className='flex items-center justify-center'>

@@ -15,3 +15,20 @@ export {
 
 // UI Constants
 export { PROCESSING_MESSAGES, UI_TEXT } from './ui';
+
+// Validation Schemas and Types
+export {
+  emailSchema,
+  passwordSchema,
+  verificationCodeSchema,
+  loginSchema,
+  signUpSchema,
+  forgotPasswordSchema,
+  verifyEmailSchema,
+  getPasswordStrength,
+  VALIDATION_MESSAGES,
+  type LoginFormData,
+  type SignUpFormData,
+  type ForgotPasswordFormData,
+  type VerifyEmailFormData,
+} from './validation';

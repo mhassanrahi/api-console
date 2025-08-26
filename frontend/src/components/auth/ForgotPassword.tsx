@@ -1,32 +1,50 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { resetPassword } from 'aws-amplify/auth';
 import type { AuthScreen } from './AuthContainer';
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormData,
+} from '../../constants/validation';
+import FormField from '../common/FormField';
 
 const ForgotPassword: React.FC<{
   setScreen: (s: AuthScreen) => void;
   email: string;
 }> = ({ setScreen, email }) => {
-  const [emailInput, setEmailInput] = useState(email);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [apiError, setApiError] = useState('');
 
-  const handleForgot = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    mode: 'onChange',
+    defaultValues: {
+      email: email,
+    },
+  });
+
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     setLoading(true);
-    setError('');
+    setApiError('');
+
     try {
-      await resetPassword({ username: emailInput });
+      await resetPassword({ username: data.email });
       setSent(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to send reset code');
+      setApiError(err.message || 'Failed to send reset code');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleForgot} className='space-y-6'>
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
       {/* Header Text */}
       <div className='text-center'>
         <p className='text-sm text-gray-600'>
@@ -36,28 +54,26 @@ const ForgotPassword: React.FC<{
       </div>
 
       {/* Email Input */}
-      <div>
-        <label
-          htmlFor='reset-email'
-          className='block text-sm font-medium text-gray-700 mb-2'
-        >
-          Email address
-        </label>
+      <FormField
+        label='Email address'
+        name='email'
+        type='email'
+        placeholder='Enter your email'
+        error={errors.email}
+        required
+      >
         <input
-          id='reset-email'
+          {...register('email')}
           type='email'
           placeholder='Enter your email'
-          value={emailInput}
-          onChange={e => setEmailInput(e.target.value)}
-          required
-          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+          className='w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
         />
-      </div>
+      </FormField>
 
-      {/* Error Message */}
-      {error && (
+      {/* API Error Message */}
+      {apiError && (
         <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
-          <p className='text-red-600 text-sm'>{error}</p>
+          <p className='text-red-600 text-sm'>{apiError}</p>
         </div>
       )}
 
@@ -73,8 +89,8 @@ const ForgotPassword: React.FC<{
       {/* Send Reset Button */}
       <button
         type='submit'
-        disabled={loading || sent}
-        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+        disabled={loading || sent || !isValid}
+        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
       >
         {loading ? (
           <div className='flex items-center justify-center'>

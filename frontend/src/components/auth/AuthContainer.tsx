@@ -3,12 +3,28 @@ import Login from './Login.tsx';
 import SignUp from './SignUp.tsx';
 import ForgotPassword from './ForgotPassword.tsx';
 import VerifyEmail from './VerifyEmail.tsx';
+import { UI_TEXT } from '../../constants';
 
 export type AuthScreen = 'login' | 'signup' | 'forgot' | 'verify';
 
 const AuthContainer: React.FC = () => {
   const [screen, setScreen] = useState<AuthScreen>('login');
   const [email, setEmail] = useState('');
+
+  const getHeaderText = (screen: AuthScreen) => {
+    switch (screen) {
+      case 'login':
+        return 'Welcome back';
+      case 'signup':
+        return 'Create your account';
+      case 'forgot':
+        return 'Reset your password';
+      case 'verify':
+        return 'Verify your email';
+      default:
+        return 'Welcome';
+    }
+  };
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4'>
@@ -18,12 +34,7 @@ const AuthContainer: React.FC = () => {
           <div className='bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6'>
             <div className='text-center'>
               <h1 className='text-2xl font-bold text-white mb-2'>Knowlix</h1>
-              <p className='text-blue-100 text-sm'>
-                {screen === 'login' && 'Welcome back'}
-                {screen === 'signup' && 'Create your account'}
-                {screen === 'forgot' && 'Reset your password'}
-                {screen === 'verify' && 'Verify your email'}
-              </p>
+              <p className='text-blue-100 text-sm'>{getHeaderText(screen)}</p>
             </div>
           </div>
 
