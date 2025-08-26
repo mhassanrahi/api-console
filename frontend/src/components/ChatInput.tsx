@@ -229,7 +229,7 @@ const ChatInput: React.FC = () => {
               className={`font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm ${
                 isProcessing
                   ? 'bg-gray-400 text-white cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:shadow-md transform hover:-translate-y-0.5'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:shadow-md transform hover:-translate-y-0.5 cursor-pointer'
               }`}
             >
               {isProcessing ? (

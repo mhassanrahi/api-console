@@ -89,9 +89,9 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
               📌 Pinned Messages
             </h4>
             <div className='space-y-3'>
-              {pinnedMessages.map((msg, i) => (
+              {pinnedMessages.map(msg => (
                 <div
-                  key={`pinned-${msg.api}-${msg.timestamp}-${i}`}
+                  key={msg.id}
                   className='bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4 relative animate-pulse'
                 >
                   <div className='text-sm text-gray-600 mb-2 font-medium'>
@@ -104,10 +104,8 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                     {new Date(msg.timestamp).toLocaleTimeString()}
                   </div>
                   <button
-                    onClick={() =>
-                      handlePinMessage(`${msg.api}-${msg.timestamp}-${i}`)
-                    }
-                    className='absolute top-2 right-2 text-yellow-600 hover:text-red-500 transition-colors duration-200'
+                    onClick={() => handlePinMessage(msg.id!)}
+                    className='absolute top-2 right-2 text-yellow-600 hover:text-red-500 transition-colors duration-200 cursor-pointer'
                     title='Unpin message'
                   >
                     📌
@@ -121,10 +119,10 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
         {/* Regular Messages Section */}
         {unpinnedMessages.length > 0 ? (
           <div className='space-y-3'>
-            {unpinnedMessages.map((msg, i) => (
+            {unpinnedMessages.map(msg => (
               <div
-                key={`${msg.api}-${msg.timestamp}-${i}`}
-                className={`p-4 rounded-lg border transition-all duration-200 cursor-pointer group relative ${
+                key={msg.id}
+                className={`p-4 rounded-lg border transition-all duration-200 group relative ${
                   globalSearchTerm &&
                   (msg.command
                     .toLowerCase()
@@ -146,10 +144,8 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </div>
                 <button
-                  onClick={() =>
-                    handlePinMessage(`${msg.api}-${msg.timestamp}-${i}`)
-                  }
-                  className='absolute top-2 right-2 text-gray-400 opacity-0 group-hover:opacity-100 hover:text-yellow-600 transition-all duration-200'
+                  onClick={() => handlePinMessage(msg.id!)}
+                  className='absolute top-2 right-2 text-gray-400 opacity-0 group-hover:opacity-100 hover:text-yellow-600 transition-all duration-200 cursor-pointer'
                   title='Pin message'
                 >
                   📌

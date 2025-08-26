@@ -253,7 +253,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
       <button
         ref={buttonRef}
         onClick={handleButtonClick}
-        className='bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md'
+        className='bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md cursor-pointer'
       >
         <span className='text-lg'>📋</span>
         <span className='text-sm'>History & Help</span>
@@ -287,7 +287,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                 className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.key
                     ? 'text-blue-600 bg-white border-b-2 border-blue-600'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50 cursor-pointer'
                 }`}
               >
                 <div className='flex items-center justify-center gap-2'>
@@ -315,7 +315,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                           onSelectCommand(cmd.command);
                           setIsOpen(false);
                         }}
-                        className='w-full p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-left group'
+                        className='w-full p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-left group cursor-pointer'
                       >
                         <div className='flex items-center justify-between'>
                           <div className='flex-1'>
@@ -362,7 +362,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                         onSelectCommand(cmd.command);
                         setIsOpen(false);
                       }}
-                      className='w-full p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-left group'
+                      className='w-full p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-left group cursor-pointer'
                     >
                       <div className='flex items-center justify-between'>
                         <div className='flex-1'>
