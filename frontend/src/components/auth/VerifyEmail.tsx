@@ -27,41 +27,80 @@ const VerifyEmail: React.FC<{
   };
 
   return (
-    <form onSubmit={handleVerify}>
-      <h2>Verify Email</h2>
-      <input
-        type='text'
-        placeholder='Verification Code'
-        value={code}
-        onChange={e => setCode(e.target.value)}
-        required
-        style={{ width: '100%', marginBottom: 12, padding: 8 }}
-      />
-      {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
-      <button
-        type='submit'
-        disabled={loading}
-        style={{ width: '100%', padding: 10 }}
-      >
-        {loading ? 'Verifying...' : 'Verify'}
-      </button>
-      {success && (
-        <div style={{ color: 'green', marginTop: 8 }}>
-          Verified! Redirecting to login...
+    <form onSubmit={handleVerify} className='space-y-6'>
+      {/* Email Display */}
+      <div className='text-center'>
+        <p className='text-sm text-gray-600 mb-2'>
+          We sent a verification code to:
+        </p>
+        <p className='font-medium text-gray-900'>{email}</p>
+      </div>
+
+      {/* Verification Code Input */}
+      <div>
+        <label
+          htmlFor='verification-code'
+          className='block text-sm font-medium text-gray-700 mb-2'
+        >
+          Verification code
+        </label>
+        <input
+          id='verification-code'
+          type='text'
+          placeholder='Enter 6-digit code'
+          value={code}
+          onChange={e => setCode(e.target.value)}
+          required
+          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400 text-center text-lg tracking-widest'
+          maxLength={6}
+        />
+        <p className='mt-2 text-xs text-gray-500'>
+          Check your email for the verification code
+        </p>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
+          <p className='text-red-600 text-sm'>{error}</p>
         </div>
       )}
-      <div style={{ marginTop: 12, textAlign: 'center' }}>
+
+      {/* Success Message */}
+      {success && (
+        <div className='bg-green-50 border border-green-200 rounded-lg p-3'>
+          <p className='text-green-600 text-sm'>
+            Email verified successfully! Redirecting to login...
+          </p>
+        </div>
+      )}
+
+      {/* Verify Button */}
+      <button
+        type='submit'
+        disabled={loading || success}
+        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
+      >
+        {loading ? (
+          <div className='flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2'></div>
+            Verifying...
+          </div>
+        ) : success ? (
+          'Verified!'
+        ) : (
+          'Verify email'
+        )}
+      </button>
+
+      {/* Back to Login */}
+      <div className='text-center'>
         <button
           type='button'
           onClick={() => setScreen('login')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#007bff',
-            cursor: 'pointer',
-          }}
+          className='text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200'
         >
-          Back to Login
+          Back to sign in
         </button>
       </div>
     </form>

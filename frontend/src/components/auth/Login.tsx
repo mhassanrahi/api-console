@@ -26,62 +26,100 @@ const Login: React.FC<{
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <h2>Login</h2>
-      <input
-        type='email'
-        placeholder='Email'
-        value={email}
-        onChange={e => {
-          setEmailLocal(e.target.value);
-          setEmail(e.target.value);
-        }}
-        required
-        style={{ width: '100%', marginBottom: 12, padding: 8 }}
-      />
-      <input
-        type='password'
-        placeholder='Password'
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        required
-        style={{ width: '100%', marginBottom: 12, padding: 8 }}
-      />
-      {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
+    <form onSubmit={handleLogin} className='space-y-6'>
+      {/* Email Input */}
+      <div>
+        <label
+          htmlFor='email'
+          className='block text-sm font-medium text-gray-700 mb-2'
+        >
+          Email address
+        </label>
+        <input
+          id='email'
+          type='email'
+          placeholder='Enter your email'
+          value={email}
+          onChange={e => {
+            setEmailLocal(e.target.value);
+            setEmail(e.target.value);
+          }}
+          required
+          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+        />
+      </div>
+
+      {/* Password Input */}
+      <div>
+        <label
+          htmlFor='password'
+          className='block text-sm font-medium text-gray-700 mb-2'
+        >
+          Password
+        </label>
+        <input
+          id='password'
+          type='password'
+          placeholder='Enter your password'
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+          className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400'
+        />
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className='bg-red-50 border border-red-200 rounded-lg p-3'>
+          <p className='text-red-600 text-sm'>{error}</p>
+        </div>
+      )}
+
+      {/* Login Button */}
       <button
         type='submit'
         disabled={loading}
-        style={{ width: '100%', padding: 10 }}
+        className='w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
       >
-        {loading ? 'Logging in...' : 'Login'}
+        {loading ? (
+          <div className='flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2'></div>
+            Signing in...
+          </div>
+        ) : (
+          'Sign in'
+        )}
       </button>
-      <div style={{ marginTop: 12, textAlign: 'right' }}>
+
+      {/* Forgot Password Link */}
+      <div className='text-center'>
         <button
           type='button'
           onClick={() => setScreen('forgot')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#007bff',
-            cursor: 'pointer',
-          }}
+          className='text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors duration-200'
         >
-          Forgot password?
+          Forgot your password?
         </button>
       </div>
-      <div style={{ marginTop: 12, textAlign: 'center' }}>
-        <span>Don't have an account? </span>
+
+      {/* Divider */}
+      <div className='relative'>
+        <div className='absolute inset-0 flex items-center'>
+          <div className='w-full border-t border-gray-200'></div>
+        </div>
+        <div className='relative flex justify-center text-sm'>
+          <span className='px-2 bg-white text-gray-500'>New to Knowlix?</span>
+        </div>
+      </div>
+
+      {/* Sign Up Link */}
+      <div className='text-center'>
         <button
           type='button'
           onClick={() => setScreen('signup')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#007bff',
-            cursor: 'pointer',
-          }}
+          className='text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200'
         >
-          Sign up
+          Create an account
         </button>
       </div>
     </form>
