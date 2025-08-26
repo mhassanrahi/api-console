@@ -1,12 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { fetchAuthSession } from 'aws-amplify/auth';
-import { useDispatch } from 'react-redux';
-import { addMessage } from '../features/chatSlice';
 
 export function useSocket(onEvents?: (socket: Socket) => void) {
   const socketRef = useRef<Socket | null>(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
@@ -18,9 +15,8 @@ export function useSocket(onEvents?: (socket: Socket) => void) {
         transports: ['websocket'],
       });
       socketRef.current = socket;
-      socket.on('api_response', (data) => {
-        dispatch(addMessage(data));
-      });
+      
+      // Let the component handle its own events
       if (onEvents) onEvents(socket);
     })();
     return () => {

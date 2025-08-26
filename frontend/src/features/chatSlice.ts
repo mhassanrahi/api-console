@@ -21,7 +21,17 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     addMessage(state, action: PayloadAction<ChatMessage>) {
-      state.messages.push(action.payload);
+      // Check for duplicate messages to prevent duplicates
+      const isDuplicate = state.messages.some(
+        msg => 
+          msg.command === action.payload.command && 
+          msg.api === action.payload.api && 
+          msg.timestamp === action.payload.timestamp
+      );
+      
+      if (!isDuplicate) {
+        state.messages.push(action.payload);
+      }
     },
     clearMessages(state) {
       state.messages = [];
