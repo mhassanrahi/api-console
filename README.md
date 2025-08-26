@@ -131,24 +131,6 @@ VITE_COGNITO_USER_POOL_ID=your-user-pool-id
 VITE_COGNITO_CLIENT_ID=your-client-id
 ```
 
-## 🔐 AWS Cognito Setup
-
-### 1. Create User Pool
-1. Go to AWS Cognito Console
-2. Create a new User Pool
-3. Configure sign-in experience (email)
-4. Set password requirements
-5. Configure app integration
-
-### 2. Create App Client
-1. In your User Pool, create an app client
-2. Enable authentication flows
-3. Configure callback URLs
-4. Note down the Client ID
-
-### 3. Update Environment Variables
-Update both frontend and backend `.env` files with your Cognito configuration.
-
 ## 📱 Usage Guide
 
 ### Authentication
