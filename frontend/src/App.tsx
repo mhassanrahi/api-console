@@ -23,8 +23,10 @@ const App: React.FC = () => {
       style={{
         display: 'flex',
         height: '100vh',
+        // maxHeight: '100vh',
         background: '#f0f2f5',
         overflow: 'hidden', // Prevent body overflow
+        // position: 'relative',
       }}
     >
       <Sidebar />
@@ -43,19 +45,31 @@ const App: React.FC = () => {
             flex: 1,
             display: 'flex',
             gap: 8,
-            overflow: 'auto',
             padding: 8,
             minHeight: 0, // Allow flex item to shrink
+            maxHeight: 'calc(100vh - 140px)', // Account for header and footer
+            // Add horizontal scrolling for API panels
+            overflowX: 'auto',
+            overflowY: 'hidden',
           }}
         >
           {activeApis.length > 0 ? (
-            activeApis.map(api => (
-              <ResultPanel
-                key={api}
-                apiName={api}
-                globalSearchTerm={globalSearchTerm}
-              />
-            ))
+            <div
+              style={{
+                display: 'flex',
+                gap: 8,
+                minWidth: 'max-content',
+                paddingRight: 8,
+              }}
+            >
+              {activeApis.map(api => (
+                <ResultPanel
+                  key={api}
+                  apiName={api}
+                  globalSearchTerm={globalSearchTerm}
+                />
+              ))}
+            </div>
           ) : (
             <div
               style={{

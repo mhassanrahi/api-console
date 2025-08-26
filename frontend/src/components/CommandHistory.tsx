@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 
@@ -17,7 +17,9 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
   const [activeTab, setActiveTab] = useState<'recent' | 'common' | 'help'>(
     'recent'
   );
+  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
   const messages = useSelector((state: RootState) => state.chat.messages);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Get unique commands from recent messages with timestamps
   const recentCommands = useMemo(() => {
@@ -146,10 +148,110 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
     return colors[category] || '#95a5a6';
   };
 
+  // Handle click outside to close popup
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const popupElement = document.querySelector(
+        '[data-popup="command-history"]'
+      );
+
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(target) &&
+        popupElement &&
+        !popupElement.contains(target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  // Calculate popup position to prevent cropping
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      // Add a longer delay to ensure DOM is fully rendered, especially on page reload
+      const timeoutId = setTimeout(() => {
+        const buttonRect = buttonRef.current?.getBoundingClientRect();
+        if (!buttonRect) return;
+
+        // Double-check that we have valid coordinates
+        if (buttonRect.top === 0 && buttonRect.left === 0) {
+          // Button position not ready yet, try again
+          setTimeout(() => {
+            const retryRect = buttonRef.current?.getBoundingClientRect();
+            if (retryRect && retryRect.top > 0) {
+              calculatePopupPosition(retryRect);
+            }
+          }, 100);
+          return;
+        }
+
+        calculatePopupPosition(buttonRect);
+      }, 100); // Increased delay for page reload scenarios
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen]);
+
+  const calculatePopupPosition = (buttonRect: DOMRect) => {
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const popupHeight = Math.min(400, viewportHeight * 0.6); // Responsive height
+    const popupWidth = 320; // Fixed width
+    const margin = 20; // Safety margin
+
+    // Calculate horizontal position to prevent overflow
+    let left = buttonRect.left;
+    if (left + popupWidth > viewportWidth - margin) {
+      left = viewportWidth - popupWidth - margin;
+    }
+    if (left < margin) {
+      left = margin;
+    }
+
+    // Calculate popup style
+    const style: React.CSSProperties = {
+      position: 'fixed',
+      left: `${left}px`,
+      background: '#fff',
+      border: '1px solid #ddd',
+      borderRadius: 8,
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      zIndex: 9999,
+      height: popupHeight,
+      overflow: 'hidden',
+      width: popupWidth,
+      pointerEvents: 'auto',
+    };
+
+    // Always position above the button to avoid overlapping the input field
+    style.bottom = `${viewportHeight - buttonRect.top + 8}px`;
+
+    setPopupStyle(style);
+  };
+
+  const handleTabClick = (tabKey: 'recent' | 'common' | 'help') => {
+    setActiveTab(tabKey);
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
+        onClick={handleButtonClick}
         style={{
           padding: '6px 12px',
           background: '#f8f9fa',
@@ -160,6 +262,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
           display: 'flex',
           alignItems: 'center',
           gap: 4,
+          whiteSpace: 'nowrap',
         }}
       >
         📋 History & Help
@@ -183,23 +286,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
       </button>
 
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: 0,
-            right: 0,
-            background: '#fff',
-            border: '1px solid #ddd',
-            borderRadius: 8,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            zIndex: 1000,
-            maxHeight: 400,
-            overflow: 'hidden',
-            marginBottom: 8,
-            minWidth: 300,
-          }}
-        >
+        <div style={popupStyle} data-popup='command-history'>
           {/* Tab Navigation */}
           <div
             style={{
@@ -215,7 +302,11 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
             ].map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as any)}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleTabClick(tab.key as 'recent' | 'common' | 'help');
+                }}
                 style={{
                   flex: 1,
                   padding: '8px 12px',
@@ -227,6 +318,9 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                   color: activeTab === tab.key ? '#007bff' : '#666',
                   borderBottom:
                     activeTab === tab.key ? '2px solid #007bff' : 'none',
+                  position: 'relative',
+                  zIndex: 10000,
+                  pointerEvents: 'auto',
                 }}
               >
                 {tab.label}
@@ -249,7 +343,7 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
           </div>
 
           {/* Tab Content */}
-          <div style={{ maxHeight: 320, overflow: 'auto' }}>
+          <div style={{ height: 'calc(100% - 40px)', overflow: 'auto' }}>
             {activeTab === 'recent' && (
               <div style={{ padding: 12 }}>
                 {recentCommands.length > 0 ? (

@@ -14,7 +14,6 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
   globalSearchTerm = '',
   children,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useDispatch();
 
@@ -23,25 +22,23 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
   );
 
   const filteredMessages = useMemo(() => {
-    const localTerm = searchTerm.toLowerCase();
     const globalTerm = globalSearchTerm.toLowerCase();
 
-    return messages.filter(msg => {
-      const matchesLocal =
-        !localTerm ||
-        msg.command.toLowerCase().includes(localTerm) ||
-        msg.result.toLowerCase().includes(localTerm);
+    return messages
+      .filter(msg => {
+        const matchesGlobal =
+          !globalTerm ||
+          msg.command.toLowerCase().includes(globalTerm) ||
+          msg.result.toLowerCase().includes(globalTerm);
 
-      const matchesGlobal =
-        !globalTerm ||
-        msg.command.toLowerCase().includes(globalTerm) ||
-        msg.result.toLowerCase().includes(globalTerm);
+        return matchesGlobal;
+      })
+      .sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
+  }, [messages, globalSearchTerm]);
 
-      return matchesLocal && matchesGlobal;
-    });
-  }, [messages, searchTerm, globalSearchTerm]);
-
-  const pinnedMessages = messages.filter(msg => msg.pinned);
+  const pinnedMessages = messages
+    .filter(msg => msg.pinned)
+    .sort((a, b) => b.timestamp - a.timestamp); // Sort pinned messages by timestamp, newest first
   const unpinnedMessages = filteredMessages.filter(msg => !msg.pinned);
 
   const handlePinMessage = (messageId: string) => {
@@ -52,7 +49,8 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
     <section
       style={{
         flex: 1,
-        minWidth: 0, // Allow panel to shrink
+        minWidth: 280, // Set minimum width for better readability
+        maxWidth: 350, // Set maximum width to prevent overly wide panels
         margin: 8,
         padding: 16,
         background: '#fff',
@@ -68,15 +66,13 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Header */}
+      {/* Header with prominent API title */}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
           marginBottom: 16,
           flexShrink: 0,
-          minWidth: 0, // Allow header to shrink
+          borderBottom: '2px solid #f0f0f0',
+          paddingBottom: 12,
         }}
       >
         <h3
@@ -85,13 +81,11 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            fontSize: 16,
-            fontWeight: 600,
+            fontSize: 18,
+            fontWeight: 700,
             color: '#333',
-            minWidth: 0, // Allow title to shrink
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
           }}
         >
           {apiName}
@@ -111,43 +105,25 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
             </span>
           )}
         </h3>
+
+        {/* Message count indicator */}
         <div
           style={{
+            fontSize: 12,
+            color: '#666',
+            marginTop: 4,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            flexShrink: 0,
           }}
         >
-          <input
-            type='text'
-            placeholder='Search...'
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{
-              padding: '4px 8px',
-              fontSize: 12,
-              border: '1px solid #ddd',
-              borderRadius: 4,
-              width: 120,
-              minWidth: 80,
-            }}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              style={{
-                padding: '2px 6px',
-                fontSize: 10,
-                background: '#f8f9fa',
-                border: '1px solid #ddd',
-                borderRadius: 3,
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            >
-              Clear
-            </button>
+          <span>
+            {messages.length} message{messages.length !== 1 ? 's' : ''}
+          </span>
+          {globalSearchTerm && (
+            <span style={{ color: '#007bff' }}>
+              • {filteredMessages.length} filtered
+            </span>
           )}
         </div>
       </div>
@@ -173,6 +149,7 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
+                fontWeight: 600,
               }}
             >
               📌 Pinned Messages
@@ -234,20 +211,13 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                   padding: 8,
                   borderRadius: 4,
                   background:
-                    (searchTerm &&
-                      (msg.command
+                    globalSearchTerm &&
+                    (msg.command
+                      .toLowerCase()
+                      .includes(globalSearchTerm.toLowerCase()) ||
+                      msg.result
                         .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                        msg.result
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()))) ||
-                    (globalSearchTerm &&
-                      (msg.command
-                        .toLowerCase()
-                        .includes(globalSearchTerm.toLowerCase()) ||
-                        msg.result
-                          .toLowerCase()
-                          .includes(globalSearchTerm.toLowerCase())))
+                        .includes(globalSearchTerm.toLowerCase()))
                       ? '#fff3cd'
                       : 'transparent',
                   position: 'relative',
@@ -260,20 +230,13 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background =
-                    (searchTerm &&
-                      (msg.command
+                    globalSearchTerm &&
+                    (msg.command
+                      .toLowerCase()
+                      .includes(globalSearchTerm.toLowerCase()) ||
+                      msg.result
                         .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                        msg.result
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()))) ||
-                    (globalSearchTerm &&
-                      (msg.command
-                        .toLowerCase()
-                        .includes(globalSearchTerm.toLowerCase()) ||
-                        msg.result
-                          .toLowerCase()
-                          .includes(globalSearchTerm.toLowerCase())))
+                        .includes(globalSearchTerm.toLowerCase()))
                       ? '#fff3cd'
                       : 'transparent';
                 }}
@@ -315,9 +278,35 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
             ))}
           </ul>
         ) : messages.length > 0 ? (
-          <span style={{ color: '#aaa' }}>No results match your search.</span>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: 20,
+              color: '#666',
+              fontSize: 14,
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 8 }}>🔍</div>
+            <div>No results match your search.</div>
+            <div style={{ fontSize: 12, marginTop: 4 }}>
+              Try adjusting your search terms
+            </div>
+          </div>
         ) : (
-          <span style={{ color: '#aaa' }}>No results yet.</span>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: 20,
+              color: '#666',
+              fontSize: 14,
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 8 }}>📝</div>
+            <div>No results yet.</div>
+            <div style={{ fontSize: 12, marginTop: 4 }}>
+              Start chatting to see results here
+            </div>
+          </div>
         )}
         {children}
       </div>
