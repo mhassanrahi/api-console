@@ -19,49 +19,13 @@ const App: React.FC = () => {
   if (!user) return <AuthContainer />;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100vh',
-        // maxHeight: '100vh',
-        background: '#f0f2f5',
-        overflow: 'hidden', // Prevent body overflow
-        // position: 'relative',
-      }}
-    >
+    <div className='h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex overflow-hidden'>
       <Sidebar />
-      <main
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: 0, // Allow main to shrink
-          overflow: 'hidden', // Prevent main overflow
-        }}
-      >
+      <main className='flex-1 flex flex-col min-w-0 overflow-hidden'>
         <GlobalSearch onSearch={setGlobalSearchTerm} />
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            gap: 8,
-            padding: 8,
-            minHeight: 0, // Allow flex item to shrink
-            maxHeight: 'calc(100vh - 140px)', // Account for header and footer
-            // Add horizontal scrolling for API panels
-            overflowX: 'auto',
-            overflowY: 'hidden',
-          }}
-        >
+        <div className='flex-1 flex gap-4 p-4 min-h-0 overflow-x-auto overflow-y-hidden'>
           {activeApis.length > 0 ? (
-            <div
-              style={{
-                display: 'flex',
-                gap: 8,
-                minWidth: 'max-content',
-                paddingRight: 8,
-              }}
-            >
+            <div className='flex gap-4 min-w-max pr-4 h-full'>
               {activeApis.map(api => (
                 <ResultPanel
                   key={api}
@@ -71,26 +35,18 @@ const App: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#666',
-                fontSize: 16,
-                textAlign: 'center',
-                padding: 20,
-              }}
-            >
-              <div>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>🔧</div>
-                <div style={{ marginBottom: 8 }}>
-                  <strong>No APIs Selected</strong>
+            <div className='flex-1 flex items-center justify-center'>
+              <div className='text-center max-w-md'>
+                <div className='w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center'>
+                  <div className='text-4xl'>🔧</div>
                 </div>
-                <div style={{ fontSize: 14 }}>
+                <h3 className='text-xl font-semibold text-gray-800 mb-2'>
+                  No APIs Selected
+                </h3>
+                <p className='text-gray-600 text-sm leading-relaxed'>
                   Select APIs from the sidebar to start using the application
-                </div>
+                  and explore different data sources.
+                </p>
               </div>
             </div>
           )}

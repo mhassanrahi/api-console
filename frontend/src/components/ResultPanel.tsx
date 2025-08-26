@@ -47,282 +47,141 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
 
   return (
     <section
-      style={{
-        flex: 1,
-        minWidth: 280, // Set minimum width for better readability
-        maxWidth: 350, // Set maximum width to prevent overly wide panels
-        margin: 8,
-        padding: 16,
-        background: '#fff',
-        borderRadius: 8,
-        boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-        transition: 'all 0.3s ease',
-        transform: isExpanded ? 'scale(1.02)' : 'scale(1)',
-        zIndex: isExpanded ? 10 : 1,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden', // Prevent content overflow
-      }}
+      className={`flex-1 min-w-[320px] max-w-[400px] bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-300 overflow-hidden flex flex-col h-full ${
+        isExpanded ? 'scale-105 shadow-xl' : 'hover:shadow-xl'
+      }`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Header with prominent API title */}
-      <div
-        style={{
-          marginBottom: 16,
-          flexShrink: 0,
-          borderBottom: '2px solid #f0f0f0',
-          paddingBottom: 12,
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            fontSize: 18,
-            fontWeight: 700,
-            color: '#333',
-            textTransform: 'uppercase',
-            letterSpacing: 0.5,
-          }}
-        >
-          {apiName}
+      {/* Header */}
+      <div className='bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex-shrink-0'>
+        <div className='flex items-center justify-between'>
+          <h3 className='text-lg font-bold text-white uppercase tracking-wide'>
+            {apiName}
+          </h3>
           {pinnedMessages.length > 0 && (
-            <span
-              style={{
-                fontSize: 11,
-                background: '#ffd700',
-                color: '#333',
-                padding: '2px 6px',
-                borderRadius: 10,
-                fontWeight: 'normal',
-                flexShrink: 0,
-              }}
-            >
+            <span className='bg-yellow-400 text-gray-800 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1'>
               📌 {pinnedMessages.length}
             </span>
           )}
-        </h3>
-
-        {/* Message count indicator */}
-        <div
-          style={{
-            fontSize: 12,
-            color: '#666',
-            marginTop: 4,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
+        </div>
+        <div className='flex items-center gap-3 mt-2 text-blue-100 text-sm'>
           <span>
             {messages.length} message{messages.length !== 1 ? 's' : ''}
           </span>
           {globalSearchTerm && (
-            <span style={{ color: '#007bff' }}>
-              • {filteredMessages.length} filtered
-            </span>
+            <>
+              <span>•</span>
+              <span className='text-yellow-300'>
+                {filteredMessages.length} filtered
+              </span>
+            </>
           )}
         </div>
       </div>
 
       {/* Content */}
-      <div
-        style={{
-          flex: 1,
-          minHeight: 40,
-          overflow: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div className='flex-1 overflow-y-auto p-4 space-y-4 min-h-0'>
         {/* Pinned Messages Section */}
         {pinnedMessages.length > 0 && (
-          <div style={{ marginBottom: 16, flexShrink: 0 }}>
-            <h4
-              style={{
-                fontSize: 12,
-                color: '#666',
-                margin: '0 0 8px 0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                fontWeight: 600,
-              }}
-            >
+          <div>
+            <h4 className='text-xs font-semibold text-gray-600 mb-3 flex items-center gap-2 uppercase tracking-wide'>
               📌 Pinned Messages
             </h4>
-            <ul style={{ padding: 0, margin: 0, listStyle: 'none' }}>
+            <div className='space-y-3'>
               {pinnedMessages.map((msg, i) => (
-                <li
+                <div
                   key={`pinned-${msg.api}-${msg.timestamp}-${i}`}
-                  style={{
-                    marginBottom: 8,
-                    padding: 8,
-                    borderRadius: 4,
-                    background: '#fff3cd',
-                    border: '1px solid #ffeaa7',
-                    position: 'relative',
-                    animation: 'slideIn 0.3s ease',
-                    wordBreak: 'break-word',
-                  }}
+                  className='bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4 relative animate-pulse'
                 >
-                  <div style={{ fontSize: 13, color: '#888' }}>
+                  <div className='text-sm text-gray-600 mb-2 font-medium'>
                     {msg.command}
                   </div>
-                  <div style={{ fontWeight: 500 }}>{msg.result}</div>
-                  <div style={{ fontSize: 11, color: '#bbb' }}>
+                  <div className='text-gray-800 mb-2 leading-relaxed'>
+                    {msg.result}
+                  </div>
+                  <div className='text-xs text-gray-500'>
                     {new Date(msg.timestamp).toLocaleTimeString()}
                   </div>
                   <button
                     onClick={() =>
                       handlePinMessage(`${msg.api}-${msg.timestamp}-${i}`)
                     }
-                    style={{
-                      position: 'absolute',
-                      top: 4,
-                      right: 4,
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: 12,
-                      color: '#ff6b6b',
-                    }}
+                    className='absolute top-2 right-2 text-yellow-600 hover:text-red-500 transition-colors duration-200'
                     title='Unpin message'
                   >
                     📌
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
         {/* Regular Messages Section */}
         {unpinnedMessages.length > 0 ? (
-          <ul style={{ padding: 0, margin: 0, listStyle: 'none' }}>
+          <div className='space-y-3'>
             {unpinnedMessages.map((msg, i) => (
-              <li
+              <div
                 key={`${msg.api}-${msg.timestamp}-${i}`}
-                style={{
-                  marginBottom: 8,
-                  padding: 8,
-                  borderRadius: 4,
-                  background:
-                    globalSearchTerm &&
-                    (msg.command
+                className={`p-4 rounded-lg border transition-all duration-200 cursor-pointer group relative ${
+                  globalSearchTerm &&
+                  (msg.command
+                    .toLowerCase()
+                    .includes(globalSearchTerm.toLowerCase()) ||
+                    msg.result
                       .toLowerCase()
-                      .includes(globalSearchTerm.toLowerCase()) ||
-                      msg.result
-                        .toLowerCase()
-                        .includes(globalSearchTerm.toLowerCase()))
-                      ? '#fff3cd'
-                      : 'transparent',
-                  position: 'relative',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  wordBreak: 'break-word',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = '#f8f9fa';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background =
-                    globalSearchTerm &&
-                    (msg.command
-                      .toLowerCase()
-                      .includes(globalSearchTerm.toLowerCase()) ||
-                      msg.result
-                        .toLowerCase()
-                        .includes(globalSearchTerm.toLowerCase()))
-                      ? '#fff3cd'
-                      : 'transparent';
-                }}
+                      .includes(globalSearchTerm.toLowerCase()))
+                    ? 'bg-yellow-50 border-yellow-200 shadow-sm'
+                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
+                }`}
               >
-                <div style={{ fontSize: 13, color: '#888' }}>{msg.command}</div>
-                <div style={{ fontWeight: 500 }}>{msg.result}</div>
-                <div style={{ fontSize: 11, color: '#bbb' }}>
+                <div className='text-sm text-gray-600 mb-2 font-medium'>
+                  {msg.command}
+                </div>
+                <div className='text-gray-800 mb-2 leading-relaxed'>
+                  {msg.result}
+                </div>
+                <div className='text-xs text-gray-500'>
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </div>
                 <button
                   onClick={() =>
                     handlePinMessage(`${msg.api}-${msg.timestamp}-${i}`)
                   }
-                  style={{
-                    position: 'absolute',
-                    top: 4,
-                    right: 4,
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    color: '#ccc',
-                    opacity: 0,
-                    transition: 'opacity 0.2s ease',
-                  }}
+                  className='absolute top-2 right-2 text-gray-400 opacity-0 group-hover:opacity-100 hover:text-yellow-600 transition-all duration-200'
                   title='Pin message'
-                  onMouseEnter={e => {
-                    e.currentTarget.style.opacity = '1';
-                    e.currentTarget.style.color = '#ffd700';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.opacity = '0';
-                    e.currentTarget.style.color = '#ccc';
-                  }}
                 >
                   📌
                 </button>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : messages.length > 0 ? (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: 20,
-              color: '#666',
-              fontSize: 14,
-            }}
-          >
-            <div style={{ fontSize: 24, marginBottom: 8 }}>🔍</div>
-            <div>No results match your search.</div>
-            <div style={{ fontSize: 12, marginTop: 4 }}>
-              Try adjusting your search terms
+          <div className='text-center py-8'>
+            <div className='w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center'>
+              <div className='text-2xl'>🔍</div>
             </div>
+            <h4 className='text-gray-700 font-medium mb-2'>
+              No results match your search
+            </h4>
+            <p className='text-gray-500 text-sm'>
+              Try adjusting your search terms
+            </p>
           </div>
         ) : (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: 20,
-              color: '#666',
-              fontSize: 14,
-            }}
-          >
-            <div style={{ fontSize: 24, marginBottom: 8 }}>📝</div>
-            <div>No results yet.</div>
-            <div style={{ fontSize: 12, marginTop: 4 }}>
-              Start chatting to see results here
+          <div className='text-center py-8'>
+            <div className='w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center'>
+              <div className='text-2xl'>📝</div>
             </div>
+            <h4 className='text-gray-700 font-medium mb-2'>No results yet</h4>
+            <p className='text-gray-500 text-sm'>
+              Start chatting to see results here
+            </p>
           </div>
         )}
         {children}
       </div>
-
-      <style>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </section>
   );
 };

@@ -173,207 +173,106 @@ const ChatInput: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        padding: '12px 16px',
-        borderTop: '1px solid #eee',
-        background: '#fafafa',
-        position: 'relative',
-        minHeight: '60px',
-        maxHeight: '120px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-      }}
-    >
-      <form
-        style={{
-          display: 'flex',
-          gap: 8,
-          alignItems: 'center',
-          flexWrap: 'nowrap',
-          minWidth: 0, // Allow flex items to shrink
-        }}
-        onSubmit={handleSubmit}
-      >
-        <div
-          style={{
-            flex: '1 1 auto',
-            minWidth: 0, // Allow input to shrink
-            position: 'relative',
-          }}
-        >
-          <input
-            ref={inputRef}
-            type='text'
-            placeholder={
-              isProcessing
-                ? `Processing${getTypingIndicator()}`
-                : 'Type a command... (e.g., get cat fact, get weather Berlin)'
-            }
-            value={input}
-            onChange={e => {
-              setInput(e.target.value);
-              setShowAutoComplete(e.target.value.length > 0);
-              setHistoryIndex(-1);
-            }}
-            onFocus={() => setShowAutoComplete(input.length > 0)}
-            onBlur={() => setTimeout(() => setShowAutoComplete(false), 200)}
-            onKeyDown={handleKeyDown}
-            disabled={isProcessing}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: 8,
-              border: isProcessing ? '1px solid #ffc107' : '1px solid #ccc',
-              opacity: isProcessing ? 0.7 : 1,
-              fontSize: 14,
-              transition: 'all 0.2s ease',
-              background: isProcessing ? '#fff3cd' : '#fff',
-              boxSizing: 'border-box',
-            }}
-          />
-          <CommandAutoComplete
-            inputValue={input}
-            onSelectSuggestion={handleAutoCompleteSelect}
-            isVisible={showAutoComplete && !isProcessing}
-          />
-
-          {/* Command history indicator */}
-          {historyIndex >= 0 && (
-            <div
-              style={{
-                position: 'absolute',
-                right: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                fontSize: 10,
-                color: '#666',
-                background: '#f8f9fa',
-                padding: '2px 6px',
-                borderRadius: 4,
+    <div className='bg-white border-t border-gray-200 shadow-lg'>
+      <div className='px-6 py-4'>
+        <form onSubmit={handleSubmit} className='flex gap-3 items-center'>
+          <div className='flex-1 relative'>
+            <input
+              ref={inputRef}
+              type='text'
+              placeholder={
+                isProcessing
+                  ? `Processing${getTypingIndicator()}`
+                  : 'Type a command... (e.g., get cat fact, get weather Berlin)'
+              }
+              value={input}
+              onChange={e => {
+                setInput(e.target.value);
+                setShowAutoComplete(e.target.value.length > 0);
+                setHistoryIndex(-1);
               }}
-            >
-              {historyIndex + 1}/{commandHistory.length}
+              onFocus={() => setShowAutoComplete(input.length > 0)}
+              onBlur={() => setTimeout(() => setShowAutoComplete(false), 200)}
+              onKeyDown={handleKeyDown}
+              disabled={isProcessing}
+              className={`w-full px-4 py-3 pl-12 pr-4 rounded-lg border transition-all duration-200 placeholder-gray-400 ${
+                isProcessing
+                  ? 'border-yellow-300 bg-yellow-50 opacity-70'
+                  : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20'
+              }`}
+            />
+            <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+              <div
+                className={`text-lg ${isProcessing ? 'text-yellow-500' : 'text-gray-400'}`}
+              >
+                💬
+              </div>
             </div>
-          )}
-        </div>
+            <CommandAutoComplete
+              inputValue={input}
+              onSelectSuggestion={handleAutoCompleteSelect}
+              isVisible={showAutoComplete && !isProcessing}
+            />
 
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            flexShrink: 0, // Prevent buttons from shrinking
-            alignItems: 'center',
-          }}
-        >
-          <button
-            type='submit'
-            disabled={isProcessing}
-            style={{
-              padding: '10px 16px',
-              borderRadius: 8,
-              background: isProcessing ? '#6c757d' : '#007bff',
-              color: '#fff',
-              border: 'none',
-              cursor: isProcessing ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-              fontWeight: 500,
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              whiteSpace: 'nowrap',
-              minWidth: 'fit-content',
-            }}
-          >
-            {isProcessing ? (
-              <>
-                <div
-                  style={{
-                    width: 12,
-                    height: 12,
-                    border: '2px solid transparent',
-                    borderTop: '2px solid #fff',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
-                  }}
-                />
-                Processing
-              </>
-            ) : (
-              <>
-                <span>📤</span>
-                Send
-              </>
+            {/* Command history indicator */}
+            {historyIndex >= 0 && (
+              <div className='absolute right-3 top-1/2 transform -translate-y-1/2 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-medium'>
+                {historyIndex + 1}/{commandHistory.length}
+              </div>
             )}
-          </button>
+          </div>
 
-          <CommandHistory onSelectCommand={handleSelectCommand} />
-        </div>
-      </form>
+          <div className='flex gap-3 items-center'>
+            <button
+              type='submit'
+              disabled={isProcessing}
+              className={`font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm ${
+                isProcessing
+                  ? 'bg-gray-400 text-white cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:shadow-md transform hover:-translate-y-0.5'
+              }`}
+            >
+              {isProcessing ? (
+                <>
+                  <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                  Processing
+                </>
+              ) : (
+                <>
+                  <span className='text-lg'>📤</span>
+                  Send
+                </>
+              )}
+            </button>
 
-      {/* Enhanced processing indicator */}
-      {isProcessing && (
-        <div
-          style={{
-            marginTop: 8,
-            padding: 10,
-            background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
-            borderRadius: 8,
-            fontSize: 13,
-            color: '#1976d2',
-            border: '1px solid #bbdefb',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
-          <div
-            style={{
-              width: 14,
-              height: 14,
-              border: '2px solid #1976d2',
-              borderTop: '2px solid transparent',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-            }}
-          />
-          <div>
-            <div style={{ fontWeight: 500, marginBottom: 2 }}>
-              {processingMessage}
-              {getTypingIndicator()}
-            </div>
-            <div style={{ fontSize: 11, color: '#666' }}>
-              This may take a few seconds...
+            <CommandHistory onSelectCommand={handleSelectCommand} />
+          </div>
+        </form>
+
+        {/* Enhanced processing indicator */}
+        {isProcessing && (
+          <div className='mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg'>
+            <div className='flex items-center gap-3'>
+              <div className='w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin'></div>
+              <div>
+                <div className='text-blue-700 font-medium text-sm'>
+                  {processingMessage}
+                  {getTypingIndicator()}
+                </div>
+                <div className='text-blue-600 text-xs'>
+                  This may take a few seconds...
+                </div>
+              </div>
             </div>
           </div>
+        )}
+
+        {/* Keyboard shortcuts help */}
+        <div className='mt-3 text-center text-xs text-gray-500'>
+          💡 <strong>Ctrl+↑/↓</strong> to navigate command history •{' '}
+          <strong>Esc</strong> to clear
         </div>
-      )}
-
-      {/* Keyboard shortcuts help */}
-      <div
-        style={{
-          marginTop: 6,
-          fontSize: 10,
-          color: '#666',
-          textAlign: 'center',
-        }}
-      >
-        💡 <strong>Ctrl+↑/↓</strong> to navigate command history •{' '}
-        <strong>Esc</strong> to clear
       </div>
-
-      <style>{`
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 };

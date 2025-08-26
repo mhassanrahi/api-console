@@ -221,9 +221,10 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
       position: 'fixed',
       left: `${left}px`,
       background: '#fff',
-      border: '1px solid #ddd',
-      borderRadius: 8,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      border: '1px solid #e5e7eb',
+      borderRadius: 12,
+      boxShadow:
+        '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       zIndex: 9999,
       height: popupHeight,
       overflow: 'hidden',
@@ -248,53 +249,29 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className='relative'>
       <button
         ref={buttonRef}
         onClick={handleButtonClick}
-        style={{
-          padding: '6px 12px',
-          background: '#f8f9fa',
-          border: '1px solid #ddd',
-          borderRadius: 4,
-          cursor: 'pointer',
-          fontSize: 12,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-          whiteSpace: 'nowrap',
-        }}
+        className='bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md'
       >
-        📋 History & Help
+        <span className='text-lg'>📋</span>
+        <span className='text-sm'>History & Help</span>
         {recentCommands.length > 0 && (
-          <span
-            style={{
-              background: '#007bff',
-              color: 'white',
-              borderRadius: '50%',
-              width: 16,
-              height: 16,
-              fontSize: 10,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+          <span className='bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center'>
             {recentCommands.length}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div style={popupStyle} data-popup='command-history'>
+        <div
+          style={popupStyle}
+          data-popup='command-history'
+          className='bg-white rounded-xl shadow-2xl border border-gray-200'
+        >
           {/* Tab Navigation */}
-          <div
-            style={{
-              display: 'flex',
-              borderBottom: '1px solid #eee',
-              background: '#f8f9fa',
-            }}
-          >
+          <div className='bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200'>
             {[
               { key: 'recent', label: 'Recent', count: recentCommands.length },
               { key: 'common', label: 'Common', count: commonCommands.length },
@@ -307,49 +284,30 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                   e.stopPropagation();
                   handleTabClick(tab.key as 'recent' | 'common' | 'help');
                 }}
-                style={{
-                  flex: 1,
-                  padding: '8px 12px',
-                  background: activeTab === tab.key ? '#fff' : 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: activeTab === tab.key ? 500 : 400,
-                  color: activeTab === tab.key ? '#007bff' : '#666',
-                  borderBottom:
-                    activeTab === tab.key ? '2px solid #007bff' : 'none',
-                  position: 'relative',
-                  zIndex: 10000,
-                  pointerEvents: 'auto',
-                }}
+                className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-200 ${
+                  activeTab === tab.key
+                    ? 'text-blue-600 bg-white border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
               >
-                {tab.label}
-                {tab.count > 0 && (
-                  <span
-                    style={{
-                      background: '#007bff',
-                      color: 'white',
-                      borderRadius: 10,
-                      padding: '1px 6px',
-                      fontSize: 10,
-                      marginLeft: 4,
-                    }}
-                  >
-                    {tab.count}
-                  </span>
-                )}
+                <div className='flex items-center justify-center gap-2'>
+                  {tab.label}
+                  {tab.count > 0 && (
+                    <span className='bg-blue-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center'>
+                      {tab.count}
+                    </span>
+                  )}
+                </div>
               </button>
             ))}
           </div>
 
           {/* Tab Content */}
-          <div style={{ height: 'calc(100% - 40px)', overflow: 'auto' }}>
+          <div className='h-[calc(100%-48px)] overflow-auto'>
             {activeTab === 'recent' && (
-              <div style={{ padding: 12 }}>
+              <div className='p-4'>
                 {recentCommands.length > 0 ? (
-                  <div
-                    style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
-                  >
+                  <div className='space-y-2'>
                     {recentCommands.map((cmd, index) => (
                       <button
                         key={index}
@@ -357,48 +315,36 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                           onSelectCommand(cmd.command);
                           setIsOpen(false);
                         }}
-                        style={{
-                          padding: '8px 12px',
-                          background: 'transparent',
-                          border: '1px solid #e9ecef',
-                          borderRadius: 6,
-                          cursor: 'pointer',
-                          fontSize: 12,
-                          textAlign: 'left',
-                          color: '#495057',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
+                        className='w-full p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-left group'
                       >
-                        <div>
-                          <div style={{ fontWeight: 500 }}>{cmd.command}</div>
-                          <div style={{ fontSize: 10, color: '#6c757d' }}>
-                            {cmd.api} • {formatTimestamp(cmd.timestamp)}
+                        <div className='flex items-center justify-between'>
+                          <div className='flex-1'>
+                            <div className='font-medium text-gray-800 group-hover:text-blue-700 transition-colors duration-200'>
+                              {cmd.command}
+                            </div>
+                            <div className='text-xs text-gray-500 mt-1'>
+                              {cmd.api} • {formatTimestamp(cmd.timestamp)}
+                            </div>
                           </div>
+                          <div
+                            className='w-3 h-3 rounded-full ml-2'
+                            style={{
+                              backgroundColor: getCategoryColor(cmd.api),
+                            }}
+                          />
                         </div>
-                        <div
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            background: getCategoryColor(cmd.api),
-                          }}
-                        />
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: 20,
-                      color: '#6c757d',
-                    }}
-                  >
-                    <div style={{ fontSize: 16, marginBottom: 8 }}>📝</div>
-                    <div>No recent commands</div>
-                    <div style={{ fontSize: 11, marginTop: 4 }}>
+                  <div className='text-center py-8'>
+                    <div className='w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center'>
+                      <div className='text-xl'>📝</div>
+                    </div>
+                    <div className='text-gray-600 font-medium mb-1'>
+                      No recent commands
+                    </div>
+                    <div className='text-gray-500 text-sm'>
                       Start chatting to see your history
                     </div>
                   </div>
@@ -407,10 +353,8 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
             )}
 
             {activeTab === 'common' && (
-              <div style={{ padding: 12 }}>
-                <div
-                  style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
-                >
+              <div className='p-4'>
+                <div className='space-y-2'>
                   {commonCommands.map((cmd, index) => (
                     <button
                       key={index}
@@ -418,34 +362,24 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
                         onSelectCommand(cmd.command);
                         setIsOpen(false);
                       }}
-                      style={{
-                        padding: '8px 12px',
-                        background: 'transparent',
-                        border: '1px solid #e9ecef',
-                        borderRadius: 6,
-                        cursor: 'pointer',
-                        fontSize: 12,
-                        textAlign: 'left',
-                        color: '#495057',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
+                      className='w-full p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-left group'
                     >
-                      <div>
-                        <div style={{ fontWeight: 500 }}>{cmd.command}</div>
-                        <div style={{ fontSize: 10, color: '#6c757d' }}>
-                          {cmd.description}
+                      <div className='flex items-center justify-between'>
+                        <div className='flex-1'>
+                          <div className='font-medium text-gray-800 group-hover:text-blue-700 transition-colors duration-200'>
+                            {cmd.command}
+                          </div>
+                          <div className='text-xs text-gray-500 mt-1'>
+                            {cmd.description}
+                          </div>
                         </div>
+                        <div
+                          className='w-3 h-3 rounded-full ml-2'
+                          style={{
+                            backgroundColor: getCategoryColor(cmd.category),
+                          }}
+                        />
                       </div>
-                      <div
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          background: getCategoryColor(cmd.category),
-                        }}
-                      />
                     </button>
                   ))}
                 </div>
@@ -453,52 +387,28 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
             )}
 
             {activeTab === 'help' && (
-              <div style={{ padding: 12 }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    marginBottom: 12,
-                    color: '#333',
-                  }}
-                >
+              <div className='p-4'>
+                <div className='text-sm font-semibold text-gray-800 mb-4'>
                   Available Commands
                 </div>
                 {helpContent.map((section, index) => (
-                  <div key={index} style={{ marginBottom: 16 }}>
+                  <div key={index} className='mb-6'>
                     <div
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 500,
-                        color: getCategoryColor(section.category),
-                        marginBottom: 6,
-                        textTransform: 'uppercase',
-                        letterSpacing: 0.5,
-                      }}
+                      className='text-xs font-semibold mb-3 uppercase tracking-wide'
+                      style={{ color: getCategoryColor(section.category) }}
                     >
                       {section.category}
                     </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 4,
-                      }}
-                    >
+                    <div className='space-y-2'>
                       {section.commands.map((cmd, cmdIndex) => (
                         <div
                           key={cmdIndex}
-                          style={{
-                            padding: '6px 8px',
-                            background: '#f8f9fa',
-                            borderRadius: 4,
-                            fontSize: 11,
-                          }}
+                          className='p-3 bg-gray-50 rounded-lg border border-gray-200'
                         >
-                          <div style={{ fontWeight: 500, color: '#333' }}>
+                          <div className='font-medium text-gray-800 text-sm'>
                             {cmd.cmd}
                           </div>
-                          <div style={{ color: '#6c757d', fontSize: 10 }}>
+                          <div className='text-gray-600 text-xs mt-1'>
                             {cmd.desc}
                           </div>
                         </div>
