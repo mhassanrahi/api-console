@@ -10,10 +10,13 @@ export function useSocket(onEvents?: (socket: Socket) => void) {
       const session = await fetchAuthSession();
       const token = session.tokens?.idToken?.toString();
       if (!token) return;
-      const socket = io('http://localhost:3001', {
-        auth: { token },
-        transports: ['websocket'],
-      });
+      const socket = io(
+        import.meta.env.VITE_API_URL || 'http://localhost:3001',
+        {
+          auth: { token },
+          transports: ['websocket'],
+        }
+      );
       socketRef.current = socket;
 
       // Let the component handle its own events

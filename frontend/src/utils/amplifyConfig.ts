@@ -3,12 +3,11 @@ import { Amplify } from 'aws-amplify';
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolClientId: '5ek2a00qgbfhns0d31p6utfdbq',
-      userPoolId: 'us-east-1_PIG8yV895',
+      userPoolClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
+      userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
       loginWith: {
         oauth: {
-          domain:
-            'reactive-api-console-1755953825.auth.us-east-1.amazoncognito.com',
+          domain: import.meta.env.VITE_COGNITO_DOMAIN,
           scopes: ['openid', 'email', 'profile'],
           redirectSignIn: ['http://localhost:5173/'],
           redirectSignOut: ['http://localhost:5173/'],

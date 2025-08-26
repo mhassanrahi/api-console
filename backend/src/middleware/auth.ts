@@ -3,9 +3,9 @@ import { Socket } from 'socket.io';
 
 // JWT verification configuration
 const verifier = CognitoJwtVerifier.create({
-  userPoolId: 'us-east-1_PIG8yV895',
+  userPoolId: process.env.COGNITO_USER_POOL_ID!,
   tokenUse: 'id',
-  clientId: '5ek2a00qgbfhns0d31p6utfdbq',
+  clientId: process.env.COGNITO_CLIENT_ID!,
 });
 
 export interface AuthenticatedSocket extends Socket {
@@ -28,6 +28,7 @@ export const authenticateSocket = async (
     (socket as AuthenticatedSocket).data.user = payload;
     next();
   } catch (err) {
+    console.error('Authentication error:', err);
     next(new Error('Authentication error'));
   }
 };

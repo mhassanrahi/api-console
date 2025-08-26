@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
@@ -14,7 +15,7 @@ const server = http.createServer(app);
 // Create Socket.IO server with CORS configuration
 const io = new SocketIOServer(server, {
   cors: {
-    origin: '*',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
     methods: ['GET', 'POST'],
   },
 });
