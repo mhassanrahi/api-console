@@ -52,6 +52,7 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
     <section
       style={{
         flex: 1,
+        minWidth: 0, // Allow panel to shrink
         margin: 8,
         padding: 16,
         background: '#fff',
@@ -60,41 +61,67 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
         transition: 'all 0.3s ease',
         transform: isExpanded ? 'scale(1.02)' : 'scale(1)',
         zIndex: isExpanded ? 10 : 1,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden', // Prevent content overflow
       }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
+      {/* Header */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: 16,
+          flexShrink: 0,
+          minWidth: 0, // Allow header to shrink
         }}
       >
         <h3
-          style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}
+          style={{
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: 16,
+            fontWeight: 600,
+            color: '#333',
+            minWidth: 0, // Allow title to shrink
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
         >
           {apiName}
           {pinnedMessages.length > 0 && (
             <span
               style={{
-                fontSize: 12,
+                fontSize: 11,
                 background: '#ffd700',
                 color: '#333',
                 padding: '2px 6px',
                 borderRadius: 10,
                 fontWeight: 'normal',
+                flexShrink: 0,
               }}
             >
               📌 {pinnedMessages.length}
             </span>
           )}
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            flexShrink: 0,
+          }}
+        >
           <input
             type='text'
-            placeholder='Search in results...'
+            placeholder='Search...'
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             style={{
@@ -102,7 +129,8 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
               fontSize: 12,
               border: '1px solid #ddd',
               borderRadius: 4,
-              width: 150,
+              width: 120,
+              minWidth: 80,
             }}
           />
           {searchTerm && (
@@ -115,6 +143,7 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                 border: '1px solid #ddd',
                 borderRadius: 3,
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
             >
               Clear
@@ -123,10 +152,19 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
         </div>
       </div>
 
-      <div style={{ minHeight: 40 }}>
+      {/* Content */}
+      <div
+        style={{
+          flex: 1,
+          minHeight: 40,
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {/* Pinned Messages Section */}
         {pinnedMessages.length > 0 && (
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 16, flexShrink: 0 }}>
             <h4
               style={{
                 fontSize: 12,
@@ -151,6 +189,7 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                     border: '1px solid #ffeaa7',
                     position: 'relative',
                     animation: 'slideIn 0.3s ease',
+                    wordBreak: 'break-word',
                   }}
                 >
                   <div style={{ fontSize: 13, color: '#888' }}>
@@ -214,6 +253,7 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
                   position: 'relative',
                   transition: 'all 0.2s ease',
                   cursor: 'pointer',
+                  wordBreak: 'break-word',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = '#f8f9fa';

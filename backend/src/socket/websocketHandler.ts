@@ -2,6 +2,11 @@ import { Server as SocketIOServer } from 'socket.io';
 import { AuthenticatedSocket, authenticateSocket } from '../middleware/auth';
 import { CommandController } from '../controllers/commandController';
 
+interface ProcessingStep {
+  message: string;
+  duration: number;
+}
+
 export class WebSocketHandler {
   private io: SocketIOServer;
 
@@ -25,20 +30,60 @@ export class WebSocketHandler {
         await this.handleChatCommand(socket, data);
       });
 
+      // Handle typing indicators
+      socket.on('typing_start', () => {
+        socket.broadcast.emit('user_typing', {
+          userId: socket.data.user?.sub || 'unknown',
+          isTyping: true,
+        });
+      });
+
+      socket.on('typing_stop', () => {
+        socket.broadcast.emit('user_typing', {
+          userId: socket.data.user?.sub || 'unknown',
+          isTyping: false,
+        });
+      });
+
       // Handle disconnection
       socket.on('disconnect', () => {
         console.log('WebSocket client disconnected:', socket.id);
+        // Notify other users that this user stopped typing
+        socket.broadcast.emit('user_typing', {
+          userId: socket.data.user?.sub || 'unknown',
+          isTyping: false,
+        });
       });
     });
   }
 
   private async handleChatCommand(socket: AuthenticatedSocket, data: any) {
+    const processingSteps: ProcessingStep[] = [
+      { message: 'Processing your command', duration: 500 },
+      { message: 'Fetching data from API', duration: 800 },
+      { message: 'Analyzing response', duration: 600 },
+      { message: 'Preparing results', duration: 400 },
+    ];
+
     try {
       console.log('Received command:', data);
 
-      // Send processing status
+      // Send initial processing status
       socket.emit('command_status', { status: 'processing' });
       socket.emit('typing_indicator', { isProcessing: true });
+
+      // Simulate processing steps for better UX
+      for (const step of processingSteps) {
+        socket.emit('processing_step', {
+          message: step.message,
+          timestamp: Date.now(),
+        });
+
+        // Wait for the step duration (but don't block too long)
+        await new Promise(resolve =>
+          setTimeout(resolve, Math.min(step.duration, 200))
+        );
+      }
 
       // Process the command
       const result = await CommandController.processCommand(
@@ -54,27 +99,68 @@ export class WebSocketHandler {
         socket.emit('clear_chat_history');
       }
 
-      // Send the response
+      // Send the response with enhanced metadata
       socket.emit('api_response', {
         command: data.command,
         result: result.result,
         api: result.api,
         timestamp: Date.now(),
+        processingTime: Date.now() - data.timestamp,
+        success: true,
       });
 
       // Send success status
-      socket.emit('command_status', { status: 'success' });
+      socket.emit('command_status', {
+        status: 'success',
+        message: 'Command executed successfully',
+        timestamp: Date.now(),
+      });
       socket.emit('typing_indicator', { isProcessing: false });
+
+      // Log successful command execution
+      console.log(
+        `Command executed successfully: ${data.command} by user ${socket.data.user?.sub || 'unknown'}`
+      );
     } catch (error) {
       console.error('Error processing command:', error);
 
-      // Send error status
+      // Send detailed error status
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unknown error occurred';
+      const errorCode =
+        error instanceof Error && 'code' in error
+          ? (error as any).code
+          : 'UNKNOWN_ERROR';
+
       socket.emit('command_status', {
         status: 'error',
-        error:
-          error instanceof Error ? error.message : 'An unknown error occurred',
+        error: errorMessage,
+        errorCode,
+        timestamp: Date.now(),
+        command: data.command,
       });
       socket.emit('typing_indicator', { isProcessing: false });
+
+      // Send error response to chat
+      socket.emit('api_response', {
+        command: data.command,
+        result: `Error: ${errorMessage}`,
+        api: 'System',
+        timestamp: Date.now(),
+        processingTime: Date.now() - data.timestamp,
+        success: false,
+        error: true,
+      });
+
+      // Log error for debugging
+      console.error(
+        `Command failed: ${data.command} by user ${socket.data.user?.sub || 'unknown'}`,
+        {
+          error: errorMessage,
+          errorCode,
+          timestamp: new Date().toISOString(),
+        }
+      );
     }
   }
 
@@ -91,5 +177,47 @@ export class WebSocketHandler {
   // Method to get connected clients count
   public getConnectedClientsCount(): number {
     return this.io.engine.clientsCount;
+  }
+
+  // Method to get connected clients info
+  public getConnectedClientsInfo() {
+    const clients = Array.from(this.io.sockets.sockets.values());
+    return clients.map(client => ({
+      id: client.id,
+      userId: (client as AuthenticatedSocket).data.user?.sub || 'unknown',
+      connectedAt: (client as any).connectedAt || Date.now(),
+    }));
+  }
+
+  // Method to send system notification to all clients
+  public broadcastSystemNotification(
+    message: string,
+    type: 'info' | 'warning' | 'error' = 'info'
+  ) {
+    this.io.emit('system_notification', {
+      message,
+      type,
+      timestamp: Date.now(),
+    });
+  }
+
+  // Method to send user-specific notification
+  public sendUserNotification(
+    userId: string,
+    message: string,
+    type: 'info' | 'warning' | 'error' = 'info'
+  ) {
+    const clients = Array.from(
+      this.io.sockets.sockets.values()
+    ) as AuthenticatedSocket[];
+    const userSocket = clients.find(client => client.data.user?.sub === userId);
+
+    if (userSocket) {
+      userSocket.emit('user_notification', {
+        message,
+        type,
+        timestamp: Date.now(),
+      });
+    }
   }
 }

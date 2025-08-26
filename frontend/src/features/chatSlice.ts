@@ -25,7 +25,7 @@ const chatSlice = createSlice({
     addMessage(state, action: PayloadAction<ChatMessage>) {
       // Check for duplicate messages to prevent duplicates
       const isDuplicate = state.messages.some(
-t        msg =>
+        (msg: ChatMessage) =>
           msg.command === action.payload.command &&
           msg.api === action.payload.api &&
           msg.timestamp === action.payload.timestamp
