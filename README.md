@@ -3,7 +3,7 @@
 A modern, real-time API explorer tool that allows users to interact with multiple APIs through a chat-style interface. Built with React, Node.js, and WebSocket technology for seamless real-time communication.
 
 ## Demo
-You can try out the fully deployed version here: [https://api-console-flame.vercel.app](https://api-console-flame.vercel.app).
+You can try out the fully deployed version here: [https://api-console-knowlix.vercel.app/](https://api-console-knowlix.vercel.app/).
 
 ##  Features
 
