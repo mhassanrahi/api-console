@@ -127,7 +127,8 @@ export class WebSocketHandler {
         responseStatus: 200,
         responseTime: processingTime,
         success: true,
-        apiResponse: result.result,
+        apiResponse:
+          typeof result.result === 'string' ? undefined : result.result,
         metadata: {
           processingTime,
           timestamp: Date.now(),
