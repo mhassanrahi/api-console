@@ -2,16 +2,19 @@
 
 A modern, real-time API explorer tool that allows users to interact with multiple APIs through a chat-style interface. Built with React, Node.js, and WebSocket technology for seamless real-time communication.
 
+## Demo
+You can try out the fully deployed version here: [https://api-console-flame.vercel.app](https://api-console-flame.vercel.app).
+
 ##  Features
 
-- **🔌 Multi-API Support**: Choose from 6+ public APIs (Weather, Cat Facts, Chuck Norris Jokes, etc.)
-- **💬 Chat Interface**: Natural language commands like `get weather Berlin` or `search github john`
-- ** Isolated Result Panels**: Each API gets its own dedicated panel for results
-- ** Real-time Search**: Filter results globally or within individual panels
-- ** Authentication**: Secure login with AWS Cognito integration
-- ** Real-time Updates**: WebSocket-powered live chat and API responses
-- ** Modern UI**: Beautiful, responsive design with Tailwind CSS
-- ** Form Validation**: Robust validation with React Hook Form + Zod
+- **Multi-API Support**: Choose from 6+ public APIs (Weather, Cat Facts, Chuck Norris Jokes, etc.)
+- **Chat Interface**: Natural language commands like `get weather Berlin` or `search github john`
+- **Isolated Result Panels**: Each API gets its own dedicated panel for results
+- **Real-time Search**: Filter results globally or within individual panels
+- **Authentication**: Secure login with AWS Cognito integration
+- **Real-time Updates**: WebSocket-powered live chat and API responses
+- **Modern UI**: Beautiful, responsive design with Tailwind CSS
+- **Form Validation**: Robust validation with React Hook Form + Zod
 
 ## Tech Stack
 
