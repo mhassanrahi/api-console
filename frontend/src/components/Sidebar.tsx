@@ -60,7 +60,6 @@ const Sidebar: React.FC = () => {
           }}
           className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 cursor-pointer'
         >
-          <span className='text-lg'>🚪</span>
           {UI_TEXT.BUTTONS.LOGOUT}
         </button>
       </div>

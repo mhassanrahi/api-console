@@ -49,9 +49,12 @@ const chatSlice = createSlice({
     clearMessages(state) {
       state.messages = [];
     },
+    loadMessages(state, action: PayloadAction<ChatMessage[]>) {
+      state.messages = action.payload;
+    },
   },
 });
 
-export const { addMessage, clearMessages, togglePinnedMessage } =
+export const { addMessage, clearMessages, togglePinnedMessage, loadMessages } =
   chatSlice.actions;
 export default chatSlice.reducer;

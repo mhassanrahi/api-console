@@ -1,4 +1,4 @@
-import { AuthenticatedSocket } from '../middleware/auth';
+import { AuthenticatedSocket, getCurrentDbUser } from '../middleware/auth';
 import { ApiService } from '../services/apiService';
 import { UserService } from '../services/userService';
 
@@ -115,8 +115,15 @@ export class CommandController {
     // Custom Backend - User Preferences
     if (cmd === 'get my preferences') {
       try {
-        const userId = socket.data.user?.sub || 'default';
-        const preferences = await UserService.getUserPreferences(userId);
+        const dbUser = getCurrentDbUser(socket);
+        if (!dbUser) {
+          return {
+            api: 'Custom Backend',
+            result: 'User not found. Please log in again.',
+          };
+        }
+
+        const preferences = await UserService.getUserPreferences(dbUser.id);
         return {
           api: 'Custom Backend',
           result: `Your preferences: Theme: ${
@@ -126,6 +133,7 @@ export class CommandController {
           )}, Notifications: ${preferences.notifications}`,
         };
       } catch (error) {
+        console.error('Error getting preferences:', error);
         return {
           api: 'Custom Backend',
           result: 'Failed to fetch preferences.',
@@ -143,13 +151,21 @@ export class CommandController {
         };
       }
       try {
-        const userId = socket.data.user?.sub || 'default';
-        await UserService.saveSearchQuery(userId, query);
+        const dbUser = getCurrentDbUser(socket);
+        if (!dbUser) {
+          return {
+            api: 'Custom Backend',
+            result: 'User not found. Please log in again.',
+          };
+        }
+
+        await UserService.saveSearchQuery(dbUser.id, query);
         return {
           api: 'Custom Backend',
           result: `Search "${query}" saved successfully.`,
         };
       } catch (error) {
+        console.error('Error saving search:', error);
         return {
           api: 'Custom Backend',
           result: 'Failed to save search.',
@@ -160,8 +176,15 @@ export class CommandController {
     // Custom Backend - Get Search History
     if (cmd === 'get search history') {
       try {
-        const userId = socket.data.user?.sub || 'default';
-        const history = await UserService.getSearchHistory(userId);
+        const dbUser = getCurrentDbUser(socket);
+        if (!dbUser) {
+          return {
+            api: 'Custom Backend',
+            result: 'User not found. Please log in again.',
+          };
+        }
+
+        const history = await UserService.getSearchHistory(dbUser.id);
         if (history.length > 0) {
           return {
             api: 'Custom Backend',
@@ -177,6 +200,7 @@ export class CommandController {
           };
         }
       } catch (error) {
+        console.error('Error getting search history:', error);
         return {
           api: 'Custom Backend',
           result: 'Failed to fetch search history.',

@@ -22,6 +22,14 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
     state.chat.messages.filter(msg => msg.api === apiName)
   );
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log(`📊 ResultPanel for ${apiName}:`, {
+      totalMessages: messages.length,
+      messages: messages.slice(0, 3), // Show first 3 messages for debugging
+    });
+  }, [messages, apiName]);
+
   const filteredMessages = useMemo(() => {
     const globalTerm = globalSearchTerm.toLowerCase();
 

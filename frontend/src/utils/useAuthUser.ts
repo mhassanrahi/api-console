@@ -16,5 +16,5 @@ export function useAuthUser() {
     };
   }, []);
 
-  return { user, loading };
+  return { user, loading, isAuthenticated: !!user };
 }

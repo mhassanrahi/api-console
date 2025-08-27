@@ -1,6 +1,11 @@
 import { Server as SocketIOServer } from 'socket.io';
-import { AuthenticatedSocket, authenticateSocket } from '../middleware/auth';
+import {
+  AuthenticatedSocket,
+  authenticateSocket,
+  getCurrentDbUser,
+} from '../middleware/auth';
 import { CommandController } from '../controllers/commandController';
+import { UserService } from '../services/userService';
 
 interface ProcessingStep {
   message: string;
@@ -65,8 +70,25 @@ export class WebSocketHandler {
       { message: 'Preparing results', duration: 400 },
     ];
 
+    const startTime = Date.now();
+    let dbUser: any = null;
+
     try {
       console.log('Received command:', data);
+
+      // Get user from socket
+      dbUser = getCurrentDbUser(socket);
+
+      // Save user message directly to database
+      await UserService.saveChatMessage(dbUser.id, {
+        messageType: 'user',
+        content: data.command,
+        command: data.command,
+        metadata: {
+          timestamp: data.timestamp,
+          socketId: socket.id,
+        },
+      });
 
       // Send initial processing status
       socket.emit('command_status', { status: 'processing' });
@@ -91,6 +113,28 @@ export class WebSocketHandler {
         socket
       );
 
+      const processingTime = Date.now() - startTime;
+
+      // Save API response to database
+      await UserService.saveChatMessage(dbUser.id, {
+        messageType: 'api_response',
+        content:
+          typeof result.result === 'string'
+            ? result.result
+            : JSON.stringify(result.result),
+        command: data.command,
+        apiName: result.api,
+        responseStatus: 200,
+        responseTime: processingTime,
+        success: true,
+        apiResponse: result.result,
+        metadata: {
+          processingTime,
+          timestamp: Date.now(),
+          socketId: socket.id,
+        },
+      });
+
       // Handle special system commands
       if (
         result.api === 'System' &&
@@ -105,8 +149,9 @@ export class WebSocketHandler {
         result: result.result,
         api: result.api,
         timestamp: Date.now(),
-        processingTime: Date.now() - data.timestamp,
+        processingTime,
         success: true,
+        sessionId: 'default',
       });
 
       // Send success status
@@ -124,7 +169,7 @@ export class WebSocketHandler {
     } catch (error) {
       console.error('Error processing command:', error);
 
-      // Send detailed error status
+      const processingTime = Date.now() - startTime;
       const errorMessage =
         error instanceof Error ? error.message : 'An unknown error occurred';
       const errorCode =
@@ -132,6 +177,28 @@ export class WebSocketHandler {
           ? (error as any).code
           : 'UNKNOWN_ERROR';
 
+      // Save error message to database
+      try {
+        await UserService.saveChatMessage(dbUser.id, {
+          messageType: 'error',
+          content: `Error: ${errorMessage}`,
+          command: data.command,
+          responseStatus: 500,
+          responseTime: processingTime,
+          success: false,
+          errorMessage,
+          metadata: {
+            errorCode,
+            processingTime,
+            timestamp: Date.now(),
+            socketId: socket.id,
+          },
+        });
+      } catch (dbError) {
+        console.error('Failed to save error message to database:', dbError);
+      }
+
+      // Send detailed error status
       socket.emit('command_status', {
         status: 'error',
         error: errorMessage,
@@ -147,9 +214,10 @@ export class WebSocketHandler {
         result: `Error: ${errorMessage}`,
         api: 'System',
         timestamp: Date.now(),
-        processingTime: Date.now() - data.timestamp,
+        processingTime,
         success: false,
         error: true,
+        sessionId: 'default',
       });
 
       // Log error for debugging

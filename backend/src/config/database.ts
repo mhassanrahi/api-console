@@ -1,23 +1,51 @@
-// Database configuration for future use
+import { DataSource } from 'typeorm';
+import { User } from '../entities/User';
+import { UserPreferences } from '../entities/UserPreferences';
+import { SearchHistory } from '../entities/SearchHistory';
+import { ApiUsage } from '../entities/ApiUsage';
+
+import { ChatMessage } from '../entities/ChatMessage';
+
+// Database configuration
 export const dbConfig = {
-  // Add database configuration here when needed
-  // For now, we're using in-memory storage
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || 'helloworld',
+  database: process.env.DB_NAME || 'knowlix',
+  type: process.env.DB_TYPE || 'postgres',
 };
 
-export interface UserPreferences {
-  theme: string;
-  defaultApis: string[];
-  notifications: boolean;
-}
+// TypeORM DataSource configuration
+export const AppDataSource = new DataSource({
+  type: dbConfig.type as 'postgres' | 'mysql' | 'sqlite',
+  host: dbConfig.host,
+  port: dbConfig.port,
+  username: dbConfig.username,
+  password: dbConfig.password,
+  database: dbConfig.database,
+  synchronize: process.env.DB_SYNCHRONIZE === 'true',
+  logging: process.env.DB_LOGGING === 'true',
+  entities: [User, UserPreferences, SearchHistory, ApiUsage, ChatMessage],
+  subscribers: [],
+  migrations: [],
+});
 
-export interface SearchHistory {
-  id: number;
-  query: string;
-  timestamp: number;
-}
+// Initialize database connection
+export const initializeDatabase = async () => {
+  try {
+    await AppDataSource.initialize();
+    console.log('Database connection established');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    throw error;
+  }
+};
 
-// In-memory storage for demo purposes
-export const inMemoryStorage = {
-  preferences: new Map<string, UserPreferences>(),
-  searchHistory: new Map<string, SearchHistory[]>(),
+// Graceful shutdown
+export const closeDatabase = async () => {
+  if (AppDataSource.isInitialized) {
+    await AppDataSource.destroy();
+    console.log('Database connection closed');
+  }
 };

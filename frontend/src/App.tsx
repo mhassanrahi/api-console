@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from './store';
 import AuthContainer from './components/auth/AuthContainer';
 import { useAuthUser } from './utils/useAuthUser';
+import { useChatMessages } from './hooks/useChatMessages';
 import { UI_TEXT } from './constants';
 
 const App: React.FC = () => {
@@ -15,6 +16,9 @@ const App: React.FC = () => {
   );
   const { user, loading } = useAuthUser();
   const [globalSearchTerm, setGlobalSearchTerm] = useState('');
+
+  // Load chat messages from database when app starts
+  useChatMessages();
 
   if (loading) return null;
   if (!user) return <AuthContainer />;
