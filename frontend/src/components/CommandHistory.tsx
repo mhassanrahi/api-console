@@ -23,7 +23,22 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
   const [activeTab, setActiveTab] = useState<'recent' | 'common' | 'help'>(
     'recent'
   );
-  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
+  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: '#fff',
+    border: '1px solid #e5e7eb',
+    borderRadius: 12,
+    boxShadow:
+      '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    zIndex: 9999,
+    height: 400,
+    overflow: 'hidden',
+    width: 320,
+    pointerEvents: 'auto',
+  });
   const messages = useSelector((state: RootState) => state.chat.messages);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -82,30 +97,13 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
     }
   }, [isOpen]);
 
-  // Calculate popup position to prevent cropping
+  // Calculate popup position
   useEffect(() => {
     if (isOpen && buttonRef.current) {
-      // Add a longer delay to ensure DOM is fully rendered, especially on page reload
-      const timeoutId = setTimeout(() => {
-        const buttonRect = buttonRef.current?.getBoundingClientRect();
-        if (!buttonRect) return;
-
-        // Double-check that we have valid coordinates
-        if (buttonRect.top === 0 && buttonRect.left === 0) {
-          // Button position not ready yet, try again
-          setTimeout(() => {
-            const retryRect = buttonRef.current?.getBoundingClientRect();
-            if (retryRect && retryRect.top > 0) {
-              calculatePopupPosition(retryRect);
-            }
-          }, 100);
-          return;
-        }
-
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      if (buttonRect && buttonRect.width > 0 && buttonRect.height > 0) {
         calculatePopupPosition(buttonRect);
-      }, 100); // Increased delay for page reload scenarios
-
-      return () => clearTimeout(timeoutId);
+      }
     }
   }, [isOpen]);
 
@@ -116,8 +114,10 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
     const popupWidth = 320; // Fixed width
     const margin = 20; // Safety margin
 
-    // Calculate horizontal position to prevent overflow
-    let left = buttonRect.left;
+    // Calculate horizontal position relative to button center
+    let left = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
+
+    // Ensure popup doesn't overflow viewport
     if (left + popupWidth > viewportWidth - margin) {
       left = viewportWidth - popupWidth - margin;
     }
@@ -125,10 +125,16 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
       left = margin;
     }
 
+    // Calculate vertical position - always above the button
+    const top = buttonRect.top - popupHeight - 8; // 8px gap above button
+
+    const finalTop = top < margin ? buttonRect.bottom + 8 : top;
+
     // Calculate popup style
     const style: React.CSSProperties = {
       position: 'fixed',
       left: `${left}px`,
+      top: `${finalTop}px`,
       background: '#fff',
       border: '1px solid #e5e7eb',
       borderRadius: 12,
@@ -140,9 +146,6 @@ const CommandHistory: React.FC<CommandHistoryProps> = ({ onSelectCommand }) => {
       width: popupWidth,
       pointerEvents: 'auto',
     };
-
-    // Always position above the button to avoid overlapping the input field
-    style.bottom = `${viewportHeight - buttonRect.top + 8}px`;
 
     setPopupStyle(style);
   };
