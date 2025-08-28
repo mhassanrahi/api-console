@@ -54,6 +54,7 @@ const ChatInput: React.FC = () => {
         socket.on('api_response', (data: any) => {
           console.log('Received api_response:', data);
           const message: ChatMessage = {
+            id: data.id,
             command: data.command,
             result: data.result,
             api: data.api,

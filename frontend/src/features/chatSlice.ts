@@ -79,7 +79,9 @@ const chatSlice = createSlice({
       if (!isDuplicate) {
         const messageWithId = {
           ...action.payload,
-          id: `${action.payload.api}-${action.payload.timestamp}-${Date.now()}`,
+          id:
+            action.payload.id ||
+            `${action.payload.api}-${action.payload.timestamp}-${Date.now()}`,
           pinned: false,
         };
         state.messages.push(messageWithId);

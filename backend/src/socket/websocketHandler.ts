@@ -116,7 +116,7 @@ export class WebSocketHandler {
       const processingTime = Date.now() - startTime;
 
       // Save API response to database
-      await UserService.saveChatMessage(dbUser.id, {
+      const savedMessage = await UserService.saveChatMessage(dbUser.id, {
         messageType: 'api_response',
         content:
           typeof result.result === 'string'
@@ -144,8 +144,9 @@ export class WebSocketHandler {
         socket.emit('clear_chat_history');
       }
 
-      // Send the response with enhanced metadata
+      // Send the response with enhanced metadata including database ID
       socket.emit('api_response', {
+        id: savedMessage.id,
         command: data.command,
         result: result.result,
         api: result.api,
@@ -179,8 +180,9 @@ export class WebSocketHandler {
           : 'UNKNOWN_ERROR';
 
       // Save error message to database
+      let savedErrorMessage = null;
       try {
-        await UserService.saveChatMessage(dbUser.id, {
+        savedErrorMessage = await UserService.saveChatMessage(dbUser.id, {
           messageType: 'error',
           content: `Error: ${errorMessage}`,
           command: data.command,
@@ -211,6 +213,7 @@ export class WebSocketHandler {
 
       // Send error response to chat
       socket.emit('api_response', {
+        id: savedErrorMessage?.id,
         command: data.command,
         result: `Error: ${errorMessage}`,
         api: 'System',

@@ -493,10 +493,44 @@ export class UserService {
     try {
       const messageRepository = AppDataSource.getRepository(ChatMessage);
 
-      // Find the message and verify ownership
-      const message = await messageRepository.findOne({
+      // First, try to find the message by UUID (normal case)
+      let message = await messageRepository.findOne({
         where: { id: messageId, userId },
       });
+
+      // If not found by UUID, try to find by custom ID pattern
+      if (!message) {
+        // Parse custom ID format: "api-timestamp-timestamp"
+        const customIdParts = messageId.split('-');
+        if (customIdParts.length >= 2) {
+          const apiName = customIdParts[0];
+          const timestamp = parseInt(customIdParts[1]);
+
+          if (!isNaN(timestamp)) {
+            // Find message by API name and approximate timestamp
+            const messages = await messageRepository.find({
+              where: {
+                userId,
+                apiName: apiName,
+              },
+              order: { createdAt: 'DESC' },
+              take: 10, // Limit search to recent messages
+            });
+
+            // Find the closest match by timestamp
+            const foundMessage = messages.find(msg => {
+              const msgTimestamp = new Date(msg.createdAt).getTime();
+              const timeDiff = Math.abs(msgTimestamp - timestamp);
+              // Allow 5 second tolerance for timestamp matching
+              return timeDiff <= 5000;
+            });
+
+            if (foundMessage) {
+              message = foundMessage;
+            }
+          }
+        }
+      }
 
       if (!message) {
         return { success: false, pinned: false, error: 'Message not found' };
@@ -507,7 +541,7 @@ export class UserService {
       await messageRepository.save(message);
 
       console.log(
-        ` ${message.pinned ? 'Pinned' : 'Unpinned'} message ${messageId} for user ${userId}`
+        ` ${message.pinned ? 'Pinned' : 'Unpinned'} message ${messageId} (DB ID: ${message.id}) for user ${userId}`
       );
 
       return { success: true, pinned: message.pinned };
