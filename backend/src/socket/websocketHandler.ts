@@ -4,7 +4,7 @@ import {
   authenticateSocket,
   getCurrentDbUser,
 } from '../middleware/auth';
-import { CommandController } from '../controllers/commandController';
+import { CommandService } from '../services/commandService';
 import { UserService } from '../services/userService';
 
 interface ProcessingStep {
@@ -108,8 +108,8 @@ export class WebSocketHandler {
       }
 
       // Process the command
-      const result = await CommandController.processCommand(
-        data.command,
+      const result = await CommandService.processCommand(
+        data.command.trim().toLowerCase(),
         socket
       );
 

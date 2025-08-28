@@ -1,14 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-
-export type ApiName =
-  | 'Cat Facts'
-  | 'Chuck Norris Jokes'
-  | 'Bored API'
-  | 'GitHub Users'
-  | 'Weather'
-  | 'Custom Backend'
-  | 'Dictionary';
+import type { ApiName } from '../constants/apiList';
 
 export interface ApiSelectionState {
   activeApis: ApiName[];
@@ -23,6 +15,7 @@ const initialState: ApiSelectionState = {
     'Weather',
     'Custom Backend',
     'Dictionary',
+    'System',
   ],
 };
 

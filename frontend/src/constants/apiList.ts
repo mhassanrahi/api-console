@@ -6,6 +6,7 @@ export const API_LIST = [
   'Weather',
   'Custom Backend',
   'Dictionary',
+  'System',
 ] as const;
 
 export type ApiName = (typeof API_LIST)[number];

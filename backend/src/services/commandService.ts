@@ -1,13 +1,13 @@
 import { AuthenticatedSocket, getCurrentDbUser } from '../middleware/auth';
-import { ApiService } from '../services/apiService';
-import { UserService } from '../services/userService';
+import { ApiService } from './apiService';
+import { UserService } from './userService';
 
 export interface CommandResult {
   api: string;
   result: string;
 }
 
-export class CommandController {
+export class CommandService {
   static async processCommand(
     command: string,
     socket: AuthenticatedSocket
@@ -262,27 +262,35 @@ export class CommandController {
     if (cmd === 'help') {
       return {
         api: 'System',
-        result: `Available commands:
+        result: `📋 Available Commands:
+
+🎯 API Commands:
 • get cat fact - Get a random cat fact
-• get chuck joke - Get a Chuck Norris joke
-• search chuck [term] - Search Chuck Norris jokes
+• get chuck joke - Get a Chuck Norris joke  
+• search chuck [term] - Search Chuck Norris jokes by keyword
 • get activity - Get a random activity suggestion
 • search github [username] - Search GitHub users
-• get weather [city] - Get weather for a city
-• define [word] - Get word definition
-• get my preferences - Get user preferences
-• save search [query] - Save a search query
-• get search history - Get search history
-• clear search history - Clear search history
-• clear - Clear chat history
-• help - Show this help message`,
+• get weather [city] - Get weather for a city (default: Berlin)
+• define [word] - Get word definition from dictionary
+
+👤 User Commands:
+• get my preferences - View your user preferences
+• save search [query] - Save a search query to history
+• get search history - View your recent searches
+• clear search history - Clear your search history
+
+🛠️ System Commands:
+• clear - Clear chat history from database
+• help - Show this help message
+
+💡 Tip: Commands are case-insensitive. Use quotes for multi-word parameters.`,
       };
     }
 
     // Unknown command
     return {
-      api: 'General',
-      result: `Unknown command: ${command}. Type 'help' for available commands.`,
+      api: 'System',
+      result: `Unknown command: "${command}". Type 'help' to see all available commands.`,
     };
   }
 }
