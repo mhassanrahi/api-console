@@ -12,11 +12,12 @@ export const dbConfig = {
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'helloworld',
   database: process.env.DB_NAME || 'knowlix',
+  type: process.env.DB_TYPE || 'postgres',
 };
 
 // TypeORM DataSource configuration
 export const AppDataSource = new DataSource({
-  type: 'postgres',
+  type: dbConfig.type as 'postgres' | 'mysql' | 'sqlite',
   host: dbConfig.host,
   port: dbConfig.port,
   username: dbConfig.username,
@@ -26,7 +27,7 @@ export const AppDataSource = new DataSource({
   logging: process.env.DB_LOGGING === 'true',
   entities: [User, UserPreferences, SearchHistory, ApiUsage, ChatMessage],
   subscribers: [],
-  migrations: ['src/migrations/*.ts'],
+  migrations: ['dist/migrations/*.js'],
   migrationsTableName: 'migrations',
 });
 
