@@ -131,6 +131,27 @@ class ApiService {
     return response;
   }
 
+  // Toggle pin status of a chat message
+  async toggleMessagePin(messageId: string): Promise<ApiResponse> {
+    console.log('Making API request to toggle pin for message:', messageId);
+    const response = await this.makeRequest(
+      `/api/chat/messages/${messageId}/pin`,
+      {
+        method: 'POST',
+      }
+    );
+    console.log('API response for toggle pin:', response);
+    return response;
+  }
+
+  // Get pinned messages for current user
+  async getPinnedMessages(): Promise<ApiResponse> {
+    console.log('Making API request to get pinned messages');
+    const response = await this.makeRequest('/api/chat/messages/pinned');
+    console.log('API response for pinned messages:', response);
+    return response;
+  }
+
   // Health Check
   async healthCheck(): Promise<ApiResponse> {
     return this.makeRequest('/api/health');

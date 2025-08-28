@@ -446,4 +446,51 @@ export class UserService {
       lastActivity: lastMessage?.createdAt || null,
     };
   }
+
+  // Toggle pin status of a chat message
+  static async toggleMessagePin(
+    userId: string,
+    messageId: string
+  ): Promise<{ success: boolean; pinned: boolean; error?: string }> {
+    try {
+      const messageRepository = AppDataSource.getRepository(ChatMessage);
+
+      // Find the message and verify ownership
+      const message = await messageRepository.findOne({
+        where: { id: messageId, userId },
+      });
+
+      if (!message) {
+        return { success: false, pinned: false, error: 'Message not found' };
+      }
+
+      // Toggle the pinned status
+      message.pinned = !message.pinned;
+      await messageRepository.save(message);
+
+      console.log(
+        ` ${message.pinned ? 'Pinned' : 'Unpinned'} message ${messageId} for user ${userId}`
+      );
+
+      return { success: true, pinned: message.pinned };
+    } catch (error) {
+      console.error('Error toggling message pin:', error);
+      return { success: false, pinned: false, error: 'Failed to toggle pin' };
+    }
+  }
+
+  // Get pinned messages for a user
+  static async getPinnedMessages(userId: string): Promise<ChatMessage[]> {
+    try {
+      const messageRepository = AppDataSource.getRepository(ChatMessage);
+
+      return await messageRepository.find({
+        where: { userId, pinned: true },
+        order: { createdAt: 'DESC' },
+      });
+    } catch (error) {
+      console.error('Error getting pinned messages:', error);
+      return [];
+    }
+  }
 }

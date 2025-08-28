@@ -49,6 +49,9 @@ export class ChatMessage {
   @Column({ type: 'jsonb', nullable: true })
   apiResponse: Record<string, any>;
 
+  @Column({ name: 'pinned', default: false })
+  pinned: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

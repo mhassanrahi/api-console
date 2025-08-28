@@ -57,4 +57,18 @@ router.get(
   ChatController.getChatMessages
 );
 
+// Pin/Unpin chat message
+router.post(
+  '/chat/messages/:messageId/pin',
+  authenticateRequest,
+  ChatController.toggleMessagePin
+);
+
+// Get pinned messages for current user
+router.get(
+  '/chat/messages/pinned',
+  authenticateRequest,
+  ChatController.getPinnedMessages
+);
+
 export default router;

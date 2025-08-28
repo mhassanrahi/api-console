@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../store';
-import { togglePinnedMessage } from '../features/chatSlice';
+import type { RootState, AppDispatch } from '../store';
+import { toggleMessagePinAsync } from '../features/chatSlice';
 import { UI_TEXT } from '../constants';
 
 interface ResultPanelProps {
@@ -16,19 +16,11 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
   children,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const messages = useSelector((state: RootState) =>
     state.chat.messages.filter(msg => msg.api === apiName)
   );
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log(`📊 ResultPanel for ${apiName}:`, {
-      totalMessages: messages.length,
-      messages: messages.slice(0, 3), // Show first 3 messages for debugging
-    });
-  }, [messages, apiName]);
 
   const filteredMessages = useMemo(() => {
     const globalTerm = globalSearchTerm.toLowerCase();
@@ -50,8 +42,13 @@ const ResultPanel: React.FC<ResultPanelProps> = ({
     .sort((a, b) => b.timestamp - a.timestamp); // Sort pinned messages by timestamp, newest first
   const unpinnedMessages = filteredMessages.filter(msg => !msg.pinned);
 
-  const handlePinMessage = (messageId: string) => {
-    dispatch(togglePinnedMessage(messageId));
+  const handlePinMessage = async (messageId: string) => {
+    try {
+      await dispatch(toggleMessagePinAsync(messageId)).unwrap();
+      console.log('Successfully toggled pin for message:', messageId);
+    } catch (error) {
+      console.error('Failed to toggle pin:', error);
+    }
   };
 
   return (
