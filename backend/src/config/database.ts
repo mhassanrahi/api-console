@@ -3,7 +3,6 @@ import { User } from '../entities/User';
 import { UserPreferences } from '../entities/UserPreferences';
 import { SearchHistory } from '../entities/SearchHistory';
 import { ApiUsage } from '../entities/ApiUsage';
-
 import { ChatMessage } from '../entities/ChatMessage';
 
 // Database configuration
@@ -24,11 +23,12 @@ export const AppDataSource = new DataSource({
   username: dbConfig.username,
   password: dbConfig.password,
   database: dbConfig.database,
-  synchronize: process.env.DB_SYNCHRONIZE === 'true',
+  synchronize: false, // Disabled for production safety
   logging: process.env.DB_LOGGING === 'true',
   entities: [User, UserPreferences, SearchHistory, ApiUsage, ChatMessage],
   subscribers: [],
-  migrations: [],
+  migrations: ['src/migrations/*.ts'],
+  migrationsTableName: 'migrations',
 });
 
 // Initialize database connection
