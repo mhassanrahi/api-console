@@ -38,6 +38,10 @@ You can try out the fully deployed version here: [https://api-console-knowlix.ve
 - **CORS** - Cross-origin resource sharing
 - **Jest** - Unit testing
 
+### Database
+- **PostgreSQL** - Primary database
+- **TypeORM** - Object-Relational Mapping (ORM)
+
 ### APIs & Services
 - **AWS Cognito** - Authentication service
 - **Public APIs**:
@@ -53,6 +57,7 @@ You can try out the fully deployed version here: [https://api-console-knowlix.ve
 ### Prerequisites
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
+- **PostgreSQL** (v17 or higher)
 - **AWS Account** (for Cognito setup)
 
 ### 1. Clone the Repository
@@ -109,6 +114,16 @@ npm run dev
 # Server Configuration
 PORT=3001
 NODE_ENV=development
+
+# Database Configuration
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_NAME=db
+DB_SYNCHRONIZE=false
+DB_LOGGING=false
 
 # AWS Cognito Configuration
 AWS_REGION=aws-region
