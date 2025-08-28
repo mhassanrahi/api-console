@@ -208,12 +208,55 @@ export class CommandController {
       }
     }
 
+    // Custom Backend - Clear Search History
+    if (cmd === 'clear search history') {
+      try {
+        const dbUser = getCurrentDbUser(socket);
+        if (!dbUser) {
+          return {
+            api: 'Custom Backend',
+            result: 'User not found. Please log in again.',
+          };
+        }
+
+        await UserService.clearSearchHistory(dbUser.id);
+        return {
+          api: 'Custom Backend',
+          result: 'Search history cleared successfully.',
+        };
+      } catch (error) {
+        console.error('Error clearing search history:', error);
+        return {
+          api: 'Custom Backend',
+          result: 'Failed to clear search history.',
+        };
+      }
+    }
+
     // System Commands
     if (cmd === 'clear') {
-      return {
-        api: 'System',
-        result: 'Chat history cleared.',
-      };
+      try {
+        const dbUser = getCurrentDbUser(socket);
+        if (!dbUser) {
+          return {
+            api: 'System',
+            result: 'User not found. Please log in again.',
+          };
+        }
+
+        // Clear chat messages from database
+        await UserService.clearChatMessages(dbUser.id);
+        return {
+          api: 'System',
+          result: 'Chat history cleared from database.',
+        };
+      } catch (error) {
+        console.error('Error clearing chat history:', error);
+        return {
+          api: 'System',
+          result: 'Failed to clear chat history.',
+        };
+      }
     }
 
     if (cmd === 'help') {
@@ -230,6 +273,7 @@ export class CommandController {
 • get my preferences - Get user preferences
 • save search [query] - Save a search query
 • get search history - Get search history
+• clear search history - Clear search history
 • clear - Clear chat history
 • help - Show this help message`,
       };

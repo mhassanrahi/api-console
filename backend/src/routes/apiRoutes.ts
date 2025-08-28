@@ -71,4 +71,11 @@ router.get(
   ChatController.getPinnedMessages
 );
 
+// Clear all chat messages for current user
+router.delete(
+  '/chat/messages/clear',
+  authenticateRequest,
+  ChatController.clearChatMessages
+);
+
 export default router;

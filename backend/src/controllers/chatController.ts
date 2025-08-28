@@ -151,4 +151,49 @@ export class ChatController {
       res.status(500).json({ error: 'Failed to fetch pinned messages' });
     }
   }
+
+  // Clear all chat messages for current user
+  static async clearChatMessages(req: AuthenticatedRequest, res: Response) {
+    try {
+      console.log(
+        '🗑️ ChatController: /api/chat/messages/clear endpoint called'
+      );
+      const dbUser = getCurrentDbUser(req);
+
+      if (!dbUser) {
+        console.log('❌ ChatController: User not found in request');
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      console.log(
+        '🗑️ ChatController: Clearing chat messages for user:',
+        dbUser.id
+      );
+
+      const success = await UserService.clearChatMessages(dbUser.id);
+
+      if (success) {
+        console.log(
+          '🗑️ ChatController: Successfully cleared chat messages for user:',
+          dbUser.id
+        );
+        res.json({
+          success: true,
+          message: 'Chat messages cleared successfully',
+        });
+      } else {
+        console.log(
+          '❌ ChatController: Failed to clear chat messages for user:',
+          dbUser.id
+        );
+        res.status(500).json({
+          success: false,
+          error: 'Failed to clear chat messages',
+        });
+      }
+    } catch (error) {
+      console.error('Error clearing chat messages:', error);
+      res.status(500).json({ error: 'Failed to clear chat messages' });
+    }
+  }
 }

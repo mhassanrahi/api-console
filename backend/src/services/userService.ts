@@ -420,6 +420,44 @@ export class UserService {
     });
   }
 
+  // Clear all chat messages for a user
+  static async clearChatMessages(userId: string): Promise<boolean> {
+    try {
+      const messageRepository = AppDataSource.getRepository(ChatMessage);
+
+      // Delete all chat messages for the user
+      const result = await messageRepository.delete({ userId });
+
+      console.log(
+        `🗑️ Cleared ${result.affected || 0} chat messages for user ${userId}`
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error clearing chat messages:', error);
+      return false;
+    }
+  }
+
+  // Clear all search history for a user
+  static async clearSearchHistory(userId: string): Promise<boolean> {
+    try {
+      const searchRepository = AppDataSource.getRepository(SearchHistory);
+
+      // Delete all search history for the user
+      const result = await searchRepository.delete({ userId });
+
+      console.log(
+        `🗑️ Cleared ${result.affected || 0} search history entries for user ${userId}`
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error clearing search history:', error);
+      return false;
+    }
+  }
+
   // Get user statistics
   static async getUserStats(userId: string): Promise<{
     totalSearches: number;

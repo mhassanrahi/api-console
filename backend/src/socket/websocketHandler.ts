@@ -139,7 +139,7 @@ export class WebSocketHandler {
       // Handle special system commands
       if (
         result.api === 'System' &&
-        result.result === 'Chat history cleared.'
+        result.result === 'Chat history cleared from database.'
       ) {
         socket.emit('clear_chat_history');
       }

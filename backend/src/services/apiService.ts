@@ -70,7 +70,7 @@ export class ApiService {
   // Bored API
   static async getActivity(): Promise<ApiResponse> {
     try {
-      const response = await fetch('https://www.boredapi.com/api/activity/');
+      const response = await fetch('https://bored-api.appbrewery.com/random');
       const data = await response.json();
 
       if (data.activity) {
@@ -85,6 +85,7 @@ export class ApiService {
         };
       }
     } catch (error) {
+      console.error('Error fetching activity:', error);
       return {
         success: false,
         error: 'Failed to fetch activity',

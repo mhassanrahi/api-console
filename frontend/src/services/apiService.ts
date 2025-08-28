@@ -152,6 +152,16 @@ class ApiService {
     return response;
   }
 
+  // Clear all chat messages for current user
+  async clearChatMessages(): Promise<ApiResponse> {
+    console.log('🗑️ Making API request to clear chat messages');
+    const response = await this.makeRequest('/api/chat/messages/clear', {
+      method: 'DELETE',
+    });
+    console.log('🗑️ API response for clear chat messages:', response);
+    return response;
+  }
+
   // Health Check
   async healthCheck(): Promise<ApiResponse> {
     return this.makeRequest('/api/health');

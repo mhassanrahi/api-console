@@ -45,6 +45,24 @@ export const toggleMessagePinAsync = createAsyncThunk<
   }
 });
 
+// Async thunk for clearing all messages
+export const clearMessagesAsync = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: string }
+>('chat/clearMessages', async (_, { rejectWithValue }) => {
+  try {
+    const response = await apiService.clearChatMessages();
+    if (!response.success) {
+      return rejectWithValue(response.error || 'Failed to clear messages');
+    }
+  } catch (error) {
+    return rejectWithValue(
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
+});
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
@@ -99,6 +117,18 @@ const chatSlice = createSlice({
       .addCase(toggleMessagePinAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to toggle pin';
+      })
+      .addCase(clearMessagesAsync.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(clearMessagesAsync.fulfilled, state => {
+        state.loading = false;
+        state.messages = []; // Clear messages from store
+      })
+      .addCase(clearMessagesAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to clear messages';
       });
   },
 });
